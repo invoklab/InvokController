@@ -17,5 +17,5 @@ void Joystick::updateData(char parsedData[NUM_OF_DATA][DATA_LENGTH]){
   setX(parsedData[1]); setY(parsedData[2]);
   setR(parsedData[3]); setTheta(parsedData[4]);
   setIntensity(parsedData[5]);
-  Serial.println("theta is  " + String(getX()));
+  // Serial.println("theta is  " + String(getX()));
 }

@@ -12,6 +12,7 @@ class Controller{
     char *hostname = "ESP";
     int websocketPort = 80;
     char *connectionType = "";
+    char *response = "";
     IPAddress localIP;
     
 
@@ -23,15 +24,17 @@ class Controller{
     void setSSIDPassword(char *password);
     void setWifiHostname(char *hostname);
     void setWebsocketPort(int port);
+    void setAuthorisation(char *user, char *pass);
     void loop();
     void printIP();
     IPAddress getLocalIP();
-    WebSocketsServer websocket = WebSocketsServer(80); // websocket object
+    WebSocketsServer websocket = WebSocketsServer(80);
+     // websocket object
     void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
     void onMessageCallback(uint8_t num, char* message);
     void parse(unsigned char *myString, char *&pointer, int *idy, int col);
     
-    Joystick myJoystick;
+    Joystick joystick;
 };
 
 Controller::Controller(){
@@ -40,6 +43,7 @@ Controller::Controller(){
 
 Controller::Controller(char *connectionType){
   this->connectionType = connectionType;
+  
 }
 
 void Controller::begin(){
@@ -56,6 +60,9 @@ void Controller::begin(){
     }
     getLocalIP();
     Serial.println("");
+
+    // Set Websocket server
+    this->websocket = WebSocketsServer(this->websocketPort);
 
     // Begin websocket routine
     this->websocket.begin();
@@ -122,11 +129,19 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
         parse(payload, ptr, &idy, DATA_LENGTH);
         // Serial.println("PCB is [" + String(pch) +"]");
         // Serial.println("Parsed data 0 is " + parsedData[0][0]); // Use this to check authentication
-        Serial.println("Parsed data 0 is " + String(parsedData[0]));
-
-        if(strcmp((const char*)parsedData[0], "joystick") == 0){
+        // Serial.println("Parsed data 0 is " + String(parsedData[0]));
+        const char* command = parsedData[0];
+        if(strcmp(command, "cms") == 0){
+          memset((void*)response, 0 , sizeof(response));
+          // Serial.println(String(parsedData[1]));
+          strcat(response, "sms,");
+          strcat(response, parsedData[1]);
+          // Serial.println("concatenated string is " + String (response));
+          this->websocket.sendTXT(num, response);
+          memset((void*)response, 0 , sizeof(response));
+        } else if (strcmp(command, "joystick") == 0){
           // Update Joystick Data
-          myJoystick.updateData(parsedData);
+          joystick.updateData(parsedData);
         }
         
 
@@ -187,4 +202,8 @@ void Controller::parse(unsigned char *myString, char *&pointer, int *idy, int co
     pch++;
   }
   *idy++;
+}
+
+void Controller::setAuthorisation(char *user, char *pass){
+  this->websocket.setAuthorization(user, pass);
 }

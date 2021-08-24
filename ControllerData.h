@@ -47,8 +47,6 @@ void ControllerData::setIntensity(char *intensity){
   this->intensity = atof(intensity);
 }
 
-
-
 double ControllerData::getR(){
   return this->r;
 }
