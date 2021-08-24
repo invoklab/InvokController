@@ -1,9 +1,8 @@
-#include <ESP8266WiFi.h>
-// #ifdef ESP32
-//   #include <WiFi.h>
-// #else 
-//   #include <ESP8266WiFi.h>
-// #endif
+#ifdef ESP32
+  #include <WiFi.h>
+#else 
+  #include <ESP8266WiFi.h>
+#endif
 
 #include <WebSocketsServer.h>
 #include <Joystick.h>
@@ -22,6 +21,7 @@ class Controller{
     int websocketPort = 80;
     string connectionType = "";
     string response = "";
+    string rawData = "";
     IPAddress localIP;
     
 
@@ -29,11 +29,11 @@ class Controller{
     Controller();
     Controller(char *connectionType);
     void begin();
-    void setSSID(char *SSID);
-    void setSSIDPassword(char *password);
-    void setWifiHostname(char *hostname);
+    void setSSID(string SSID);
+    void setSSIDPassword(string password);
+    void setWifiHostname(string hostname);
     void setWebsocketPort(int port);
-    void setAuthorisation(char *user, char *pass);
+    void setAuthorisation(string user, string pass);
     void loop();
     void printIP();
     IPAddress getLocalIP();
@@ -42,6 +42,7 @@ class Controller{
     void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
     void onMessageCallback(uint8_t num, char* message);
     void parse(unsigned char *myString, char *&pointer, int *idy, int col);
+    vector<string> parsecpp(string data, string delim);
     
     Joystick joystick;
 };
@@ -79,15 +80,15 @@ void Controller::begin(){
   }
 }
 
-void Controller::setSSID(char *SSID){
+void Controller::setSSID(string SSID){
   this->SSID = SSID;
 }
 
-void Controller::setSSIDPassword(char *password){
+void Controller::setSSIDPassword(string password){
   this->password = password;
 }
 
-void Controller::setWifiHostname(char *hostname){
+void Controller::setWifiHostname(string hostname){
   this->hostname = hostname;
 }
 
@@ -122,13 +123,16 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
 
     // Message Received
     case WStype_TEXT:
-      if(strcmp((const char*)payload, "PING") == 0){
+      // Cast payload to string
+      this->rawData = string(reinterpret_cast<char*>(const_cast<uint8_t*>(payload)));
+      
+      if(this->rawData.compare("PING") == 0){
         // Heartbeat routine
         this->websocket.sendTXT(num, "PONG");
       } else {
         // Call callback function to process message
         // Parse the message
-        
+        Serial.printf("raw data is %s \n", rawData.c_str());
         char parsedData[NUM_OF_DATA][DATA_LENGTH];
         memset((void*)parsedData, 0, sizeof(parsedData));
         // char* pch = (char*)payload;
@@ -136,6 +140,13 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
         int idy = 0;
 
         parse(payload, ptr, &idy, DATA_LENGTH);
+        vector<string> parsedDataVector{};
+        parsedDataVector.reserve(10);
+        parsedDataVector = parsecpp(this->rawData, ",");
+        Serial.printf("vector is %d \n", parsedDataVector.size());
+        Serial.printf("Parsed data 0 is %s\n", parsedDataVector.at(0).c_str());
+        Serial.printf("Parsed data 1 is %s\n", parsedDataVector.at(1).c_str());
+        Serial.printf("Parsed data 2 is %s\n", parsedDataVector.at(2).c_str());
         // Serial.println("PCB is [" + String(pch) +"]");
         // Serial.println("Parsed data 0 is " + parsedData[0][0]); // Use this to check authentication
         // Serial.println("Parsed data 0 is " + String(parsedData[0]));
@@ -150,8 +161,6 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
           joystick.updateData(parsedData);
         }
         
-
-
         // this->onMessageCallback(num, (char *) payload);
         // Serial.printf("Client [%u] Text: %s\n", num, payload);
       }
@@ -210,6 +219,23 @@ void Controller::parse(unsigned char *myString, char *&pointer, int *idy, int co
   *idy++;
 }
 
-void Controller::setAuthorisation(char *user, char *pass){
-  this->websocket.setAuthorization(user, pass);
+void Controller::setAuthorisation(string user, string pass){
+  this->websocket.setAuthorization(user.c_str(), pass.c_str());
+}
+
+vector<string> Controller::parsecpp(string data, string delim){
+  vector<string> myVector{};
+  myVector.reserve(NUM_OF_DATA);
+  int pos = 0;
+
+  // Serial.printf("Raw data is %s\n", data.c_str());
+
+  while((pos = data.find(delim)) != string::npos){
+    myVector.push_back(data.substr(0, pos));
+    data.erase(0, pos + delim.length());
+  }
+  // Push last substring to vector
+  myVector.push_back(data.substr(0));
+
+  return myVector;
 }
