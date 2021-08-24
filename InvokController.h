@@ -1,18 +1,27 @@
 #include <ESP8266WiFi.h>
+// #ifdef ESP32
+//   #include <WiFi.h>
+// #else 
+//   #include <ESP8266WiFi.h>
+// #endif
+
 #include <WebSocketsServer.h>
 #include <Joystick.h>
+#include <string>
+
+using namespace std;
 
 #define NUM_OF_DATA 10
 #define DATA_LENGTH 10
 
 class Controller{
   private:
-    char *SSID = "";
-    char *password = "";
-    char *hostname = "ESP";
+    string SSID = "";
+    string password = "";
+    string hostname = "ESP";
     int websocketPort = 80;
-    char *connectionType = "";
-    char *response = "";
+    string connectionType = "";
+    string response = "";
     IPAddress localIP;
     
 
@@ -52,8 +61,8 @@ void Controller::begin(){
     // Serial.begin(9600);
     Serial.println("");
     Serial.print("Connecting ");
-    WiFi.hostname(this->hostname);
-    WiFi.begin(this->SSID, this->password);
+    WiFi.hostname(this->hostname.c_str());
+    WiFi.begin(this->SSID.c_str(), this->password.c_str());
     while ( WiFi.status() != WL_CONNECTED ) {
       delay(500);
       Serial.print(".");
@@ -132,13 +141,10 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
         // Serial.println("Parsed data 0 is " + String(parsedData[0]));
         const char* command = parsedData[0];
         if(strcmp(command, "cms") == 0){
-          memset((void*)response, 0 , sizeof(response));
-          // Serial.println(String(parsedData[1]));
-          strcat(response, "sms,");
-          strcat(response, parsedData[1]);
-          // Serial.println("concatenated string is " + String (response));
-          this->websocket.sendTXT(num, response);
-          memset((void*)response, 0 , sizeof(response));
+          this->response.clear();
+          this->response = "sms," + string(parsedData[1]);
+          this->websocket.sendTXT(num, response.c_str());
+          this->response.clear();
         } else if (strcmp(command, "joystick") == 0){
           // Update Joystick Data
           joystick.updateData(parsedData);
