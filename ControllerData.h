@@ -1,6 +1,9 @@
 #define NUM_OF_DATA 10
 #define DATA_LENGTH 10
 
+using namespace std;
+#include <string>
+
 class ControllerData{
   private:
     double r = 0;
@@ -12,11 +15,11 @@ class ControllerData{
   public:
     ControllerData();
     // ControllerData(char parsedData[NUM_OF_DATA][DATA_LENGTH]);
-    void setR(char *r);
-    void setTheta(char *theta);
-    void setX(char *x);
-    void setY(char *y);
-    void setIntensity(char *intensity);
+    void setR(string r);
+    void setTheta(string theta);
+    void setX(string x);
+    void setY(string y);
+    void setIntensity(string intensity);
 
     double getR();
     double getTheta();
@@ -27,24 +30,24 @@ class ControllerData{
 
 ControllerData::ControllerData(){};
 
-void ControllerData::setR(char *r){
-  this->r = atof(r);
+void ControllerData::setR(string r){
+  this->r = stod(r);
 }
 
-void ControllerData::setTheta(char *theta){
-  this->theta = atof(theta);
+void ControllerData::setTheta(string theta){
+  this->theta = stod(theta);
 }
 
-void ControllerData::setX(char *x){
-  this->x = atof(x);
+void ControllerData::setX(string x){
+  this->x = stod(x);
 }
 
-void ControllerData::setY(char *y){
-  this->y = atof(y);
+void ControllerData::setY(string y){
+  this->y = stod(y);
 }
 
-void ControllerData::setIntensity(char *intensity){
-  this->intensity = atof(intensity);
+void ControllerData::setIntensity(string intensity){
+  this->intensity = stod(intensity);
 }
 
 double ControllerData::getR(){

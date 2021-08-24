@@ -133,13 +133,13 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
         // Call callback function to process message
         // Parse the message
         Serial.printf("raw data is %s \n", rawData.c_str());
-        char parsedData[NUM_OF_DATA][DATA_LENGTH];
-        memset((void*)parsedData, 0, sizeof(parsedData));
-        // char* pch = (char*)payload;
-        char* ptr = &parsedData[0][0];
-        int idy = 0;
+        // char parsedData[NUM_OF_DATA][DATA_LENGTH];
+        // memset((void*)parsedData, 0, sizeof(parsedData));
+        // // char* pch = (char*)payload;
+        // char* ptr = &parsedData[0][0];
+        // int idy = 0;
 
-        parse(payload, ptr, &idy, DATA_LENGTH);
+        // parse(payload, ptr, &idy, DATA_LENGTH);
         vector<string> parsedDataVector{};
         parsedDataVector.reserve(10);
         parsedDataVector = parsecpp(this->rawData, ",");
@@ -147,18 +147,16 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
         Serial.printf("Parsed data 0 is %s\n", parsedDataVector.at(0).c_str());
         Serial.printf("Parsed data 1 is %s\n", parsedDataVector.at(1).c_str());
         Serial.printf("Parsed data 2 is %s\n", parsedDataVector.at(2).c_str());
-        // Serial.println("PCB is [" + String(pch) +"]");
-        // Serial.println("Parsed data 0 is " + parsedData[0][0]); // Use this to check authentication
-        // Serial.println("Parsed data 0 is " + String(parsedData[0]));
-        const char* command = parsedData[0];
-        if(strcmp(command, "cms") == 0){
+
+        string command = parsedDataVector[0];
+        if(command.compare("message") == 0){
           this->response.clear();
-          this->response = "sms," + string(parsedData[1]);
+          this->response = "sms," + string(parsedDataVector[1]);
           this->websocket.sendTXT(num, response.c_str());
           this->response.clear();
-        } else if (strcmp(command, "joystick") == 0){
+        } else if (command.compare("joystick") == 0){
           // Update Joystick Data
-          joystick.updateData(parsedData);
+          joystick.updateData(parsedDataVector);
         }
         
         // this->onMessageCallback(num, (char *) payload);
