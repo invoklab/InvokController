@@ -1,9 +1,11 @@
-#define NUM_OF_DATA 10
-#define DATA_LENGTH 10
+#ifndef CONTROLLER_DATA_H
+#define CONTROLLER_DATA_H
 
-using namespace std;
 #include <string>
 
+#define NUM_OF_DATA 10
+
+using namespace std;
 class ControllerData{
   private:
     double r = 0;
@@ -14,7 +16,6 @@ class ControllerData{
   
   public:
     ControllerData();
-    // ControllerData(char parsedData[NUM_OF_DATA][DATA_LENGTH]);
     void setR(string r);
     void setTheta(string theta);
     void setX(string x);
@@ -69,3 +70,5 @@ double ControllerData::getY(){
 double ControllerData::getIntensity(){
   return this->intensity;
 }
+
+#endif
