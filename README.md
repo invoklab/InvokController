@@ -38,10 +38,12 @@ In setup(), initiate serial data transmission,
 
 and continue to call setters function to set wifi credentials.
 
-`myController.setSSID("YOUR_SSID");`
-`myController.setSSIDPassword("YOUR_PASSWORD");`
-`myController.begin();`
-`myController.printIP();`
+```
+myController.setSSID("YOUR_SSID");
+myController.setSSIDPassword("YOUR_PASSWORD");
+myController.begin();
+myController.printIP();
+```
 
 Connected IP Address will be printed after printIP() function executes, this is the server address you need to connect from client (Controller app).
 
