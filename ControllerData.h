@@ -1,3 +1,10 @@
+/*
+  ControllerData.h - Library for defining and storing
+  raw values from string, sent by the app.
+  Created by Thoby L. Noorhalim.
+  26 August 2021.
+*/
+
 #ifndef CONTROLLER_DATA_H
 #define CONTROLLER_DATA_H
 
@@ -8,67 +15,29 @@
 using namespace std;
 class ControllerData{
   private:
-    double r = 0;
-    double theta = 0;
-    double x = 0;
-    double y = 0;
-    double intensity = 0;
+    double r = 0.0;
+    double theta = 0.0;
+    double x = 0.0;
+    double y = 0.0;
+    double intensity = 0.0;
   
   public:
+    // ---------- Constructor ----------
     ControllerData();
-    void setR(string r);
-    void setTheta(string theta);
+
+    // ---------- Setters ----------
     void setX(string x);
     void setY(string y);
+    void setR(string r);
+    void setTheta(string theta);
     void setIntensity(string intensity);
 
-    double getR();
-    double getTheta();
+    // ---------- Getters ----------
     double getX();
     double getY();
+    double getR();
+    double getTheta();
     double getIntensity();
 };
-
-ControllerData::ControllerData(){};
-
-void ControllerData::setR(string r){
-  this->r = stod(r);
-}
-
-void ControllerData::setTheta(string theta){
-  this->theta = stod(theta);
-}
-
-void ControllerData::setX(string x){
-  this->x = stod(x);
-}
-
-void ControllerData::setY(string y){
-  this->y = stod(y);
-}
-
-void ControllerData::setIntensity(string intensity){
-  this->intensity = stod(intensity);
-}
-
-double ControllerData::getR(){
-  return this->r;
-}
-
-double ControllerData::getTheta(){
-  return this->theta;
-}
-
-double ControllerData::getX(){
-  return this->x;
-}
-
-double ControllerData::getY(){
-  return this->y;
-}
-
-double ControllerData::getIntensity(){
-  return this->intensity;
-}
 
 #endif
