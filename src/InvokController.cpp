@@ -97,12 +97,14 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
 
     // New client has connected
     case WStype_CONNECTED:
-      {
+      if(!_isConnected){
         IPAddress ip = this->websocket.remoteIP(num);
         Serial.printf("Client [%u] Connection from ", num);
         Serial.println(ip.toString());
+        this->_isConnected = true;
+      } else {
+        Serial.printf("Connection refused, already connected to client");
       }
-      this->_isConnected = true;
       break;
 
     // Message Received
@@ -169,6 +171,7 @@ void Controller::setAuthorisation(string user, string pass){
 
 vector<string> Controller::parsecpp(string data, string delim){
   vector<string> myVector{};
+  
   myVector.reserve(NUM_OF_DATA);
   int pos = 0;
 
@@ -178,7 +181,6 @@ vector<string> Controller::parsecpp(string data, string delim){
   }
   // Push last substring to vector
   myVector.push_back(data.substr(0));
-
   return myVector;
 }
 

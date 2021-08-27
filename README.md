@@ -52,7 +52,7 @@ Inside loop(), do not forget to call,
 `myController.loop();`
 
 
-`delay()` function should not be use, because it blocks the program routine. This might cause the websocket connection to drop. Use `millis()` instead, and create if statement to execute routine every certain time period. 
+`delay()` function use is discouraged, because it blocks the program routine. It might cause the websocket connection to drop. Use `millis()` instead, and create if statement to execute routine every certain time period. 
 
 ## Examples
 Two sample codes provided to demonstate basic functionality of this library, and the Controller app.

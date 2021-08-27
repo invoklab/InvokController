@@ -20,6 +20,7 @@ class ControllerData{
     double x = 0.0;
     double y = 0.0;
     double intensity = 0.0;
+    bool buttonState = 0.0;
   
   public:
     // ---------- Constructor ----------
@@ -31,6 +32,7 @@ class ControllerData{
     void setR(string r);
     void setTheta(string theta);
     void setIntensity(string intensity);
+    void setButtonState(string state);
 
     // ---------- Getters ----------
     double getX();
@@ -38,6 +40,7 @@ class ControllerData{
     double getR();
     double getTheta();
     double getIntensity();
+    bool getButtonState();
 };
 
 #endif

@@ -30,6 +30,14 @@ void ControllerData::setIntensity(string intensity){
   this->intensity = stod(intensity);
 }
 
+void ControllerData::setButtonState(string state){
+  if(state.compare("true") == 0){
+    this->buttonState = true;
+  } else {
+    this->buttonState = false;
+  }
+}
+
 // ---------- Getters ----------
 double ControllerData::getX(){
   return this->x;
@@ -50,3 +58,8 @@ double ControllerData::getTheta(){
 double ControllerData::getIntensity(){
   return this->intensity;
 }
+
+bool ControllerData::getButtonState(){
+  return this->buttonState;
+}
+
