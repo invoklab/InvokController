@@ -19,9 +19,10 @@ void setup() {
 
 void loop() {
 
-  if (myController.joystick.getIntensity() > 0 && myController.isConnected()){
-    Serial.printf("Joystick intensity is %.1f\n", myController.joystick.getIntensity());
-    Serial.printf("Joystick theta is %.1f\n", myController.joystick.getTheta());
+  if (myController.isConnected()){
+    Serial.printf("Intensity : [ %.1f ], Theta : [ %.1f ], State : [ %s ]\n", 
+    myController.joystick.getIntensity(), myController.joystick.getTheta(),
+    myController.joystick.getButtonState() ? "true" : "false");
   }
 
   // Controller Loop

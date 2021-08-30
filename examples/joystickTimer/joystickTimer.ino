@@ -25,9 +25,10 @@ void loop() {
 
   // Print data every second
   elapsedTime = millis() - nowTime;
-  if (elapsedTime > 1000 && myController.joystick.getIntensity() > 0){
-    Serial.printf("Joystick intensity is %.1f\n", myController.joystick.getIntensity());
-    Serial.printf("Joystick theta is %.1f\n", myController.joystick.getTheta());
+  if (elapsedTime > 1000 && myController.isConnected()){
+    Serial.printf("Intensity : [ %.1f ], Theta : [ %.1f ], State : [ %s ]\n", 
+    myController.joystick.getIntensity(), myController.joystick.getTheta(),
+    myController.joystick.getButtonState() ? "true" : "false");
     elapsedTime = 0;
     nowTime = millis();
   }
