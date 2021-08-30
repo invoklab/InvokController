@@ -12,16 +12,23 @@ This library is still a work in progress. There may be some breaking changes in 
 
 ## Basic Functionality
 - Setting ESPs as Websocket Server
-- Basic PING/PONG heartbeat routine
-- Receiving controlling data from Controller app
+- Basic PING/PONG heartbeat routine through message (opcode 0x9 & 0xA not supported yet)
+- Receive control data from Controller app
 
 ## Quickstart
-- Install the following library:
-    - WiFi
-    - ESP8266WiFi
-    - WebSockets
-- Download/clone this repository, and put it into libraries folder of Arduino directory.
 - Download the Controller app from Google Play Store.
+- Install the following library:
+    - [WiFi](https://github.com/arduino-libraries/WiFi)
+    - [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi)
+    - [WebSockets](https://github.com/Links2004/arduinoWebSockets)
+- Download/clone this repository, and put it into libraries folder of Arduino directory.
+- Compile and upload example sketch.
+- When connected to network, program will print __IP Address__, take note of this address.
+- In Controller app home page, tap Wi-Fi icon on top right corner, this will route you to connection setup page.
+- Input the IP Address printed on serial monitor to address field.
+- Press __Connect__.
+- Status icon on top right corner will turn green when connection is established. 
+- Test connection by sending message. Server will respond or echo back the same message.
 
 ## Code Setup
 Create a new arduino sketch, and include InvokController.h
@@ -64,6 +71,18 @@ In Controller app, Joystick movement will generate 5 data, [x, y, r, theta, inte
 - __r,theta__ represent coordiate of the pad in polar form, where theta range is [0 - 360°].
 - __intensity__ is the relative distance of pad from center circle to outer circle in percentage out of 100.
 
-All of these datas are sent to the server via WiFi on selected protocol, parsed, and ready to be consumed.
+#### Getters
+`ObjectName.getX()` -> Return x coordinate as double.
+`ObjectName.getY()` -> Return y coordinate as double.
+
+`ObjectName.getR()` -> Return range value as double.
+
+`ObjectName.getTheta()` -> Return angle as double.
+
+`ObjectName.getIntensity()` -> Return intensity  as double.
+
+`ObjectName.getButtonState()` -> Return button state as boolean.
+
+All of these datas are sent to the server via WiFi on selected protocol, parsed, and ready to be used.
 
 There is a small deadzone in the middle of joystick to prevent unwanted control motion.

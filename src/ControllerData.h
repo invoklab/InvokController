@@ -20,7 +20,7 @@ class ControllerData{
     double x = 0.0;
     double y = 0.0;
     double intensity = 0.0;
-    bool buttonState = 0.0;
+    bool buttonState = false;
   
   public:
     // ---------- Constructor ----------

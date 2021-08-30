@@ -103,7 +103,7 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
         Serial.println(ip.toString());
         this->_isConnected = true;
       } else {
-        Serial.printf("Connection refused, already connected to client");
+        Serial.printf("Connection refused, already connected to client\n");
       }
       break;
 
