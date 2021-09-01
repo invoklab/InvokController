@@ -74,6 +74,10 @@ void Controller::setWebsocketPort(int port){
   this->websocketPort = port;
 }
 
+void Controller::setMessage(string data){
+  this->message = data;
+}
+
 // ------------------------------ Getters ------------------------------
 
 IPAddress Controller::getLocalIP(){
@@ -83,6 +87,10 @@ IPAddress Controller::getLocalIP(){
 
 bool Controller::isConnected(){
   return this->_isConnected;
+}
+
+string Controller::getMessage(){
+  return this->message;
 }
 
 void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
@@ -119,13 +127,15 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
         // Call callback function to process message
         // Parse the message
 
+        this->message = this->rawData;
+
         #ifdef DEBUG
-          Serial.printf("Raw data is %s \n", this->rawData.c_str());
+          Serial.printf("Message data is %s \n", this->message.c_str());
         #endif
 
         vector<string> parsedDataVector{};
         parsedDataVector.reserve(10);
-        parsedDataVector = parsecpp(this->rawData, ",");
+        parsedDataVector = parsecpp(this->message, ",");
 
         string command = parsedDataVector[0];
         

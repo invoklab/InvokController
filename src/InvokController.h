@@ -35,6 +35,7 @@ class Controller{
     string connectionType = "";
     string response = "";
     string rawData = "";
+    string message="";
     IPAddress localIP;
     bool _isConnected = false;
 
@@ -52,9 +53,11 @@ class Controller{
     void setWifiHostname(string hostname);
     void setWebsocketPort(int port);
     void setAuthorisation(string user, string pass);
+    void setMessage(string data);
 
     // ---------- Getters ----------
     bool isConnected();
+    string getMessage();
     
     void printIP();
 
