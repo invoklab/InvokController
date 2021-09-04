@@ -1,3 +1,9 @@
+/*
+  Demo sketch for receiving Color Data from Controller App
+  Written by Thoby L. Noorhalim
+  4 September 2021
+*/
+
 #include <InvokController.h>
 
 // Controller Object Instantiation
@@ -20,9 +26,10 @@ void setup() {
 void loop() {
 
   if (myController.isConnected()){
-    Serial.printf("Intensity : [ %.1f ], Theta : [ %.1f ], State : [ %s ]\n", 
-    myController.joystick.getIntensity(), myController.joystick.getTheta(),
-    myController.joystick.getButtonState() ? "true" : "false");
+    Serial.printf("R [%d] G [%d] B [%d] | H [%.1f] S[%.1f] V[%.1f]\n",
+    myController.colorPicker.getR(), myController.colorPicker.getG(),
+    myController.colorPicker.getB(), myController.colorPicker.getH(),
+    myController.colorPicker.getS(), myController.colorPicker.getV());
   }
 
   // Controller Loop

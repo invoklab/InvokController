@@ -149,6 +149,12 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
         } else if (command.compare("joystick") == 0){
           // Update Joystick Data
           joystick.updateData(parsedDataVector);
+        } else if (command.compare("cpk") == 0 ){
+          // Update Color Data
+          colorPicker.updateData(parsedDataVector);
+        } else if (command.compare("bar") == 0 ){
+          // Update Button Array Data
+          buttonArray.updateData(parsedDataVector);
         }
       }
       break;

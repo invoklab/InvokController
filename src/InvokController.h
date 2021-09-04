@@ -20,10 +20,12 @@
 
 #include <WebSocketsServer.h>
 #include <Joystick.h>
+#include <ColorPicker.h>
+#include <ButtonArray.h>
 #include <string>
 #include <vector>
 
-#define NUM_OF_DATA 10
+#define NUM_OF_DATA 15
 
 using namespace std;
 class Controller{
@@ -68,6 +70,8 @@ class Controller{
     IPAddress getLocalIP();
     WebSocketsServer websocket = WebSocketsServer(80);
     Joystick joystick;
+    ColorPicker colorPicker;
+    ButtonArray buttonArray;
 };
 
 #endif
