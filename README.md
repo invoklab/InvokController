@@ -1,12 +1,16 @@
 # Invok Controller
 
 ## What is this library?
-Invok Controller library is a wrapper library based on [WiFi](https://github.com/arduino-libraries/WiFi), [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi), and [WebSockets](https://github.com/Links2004/arduinoWebSockets) library. This library is used for connecting development boards to the Controller app through various protocol.
+Invok Controller library is a wrapper library based on [WiFi](https://github.com/arduino-libraries/WiFi), [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi), and [WebSockets](https://github.com/Links2004/arduinoWebSockets) library. This library is used for connecting development boards to the [Controller](https://play.google.com/store/apps/details?id=com.invokcontroller.app) app through various protocol. Controller App is now available on Google Play.
+
+
+
+
 
 ## Disclaimer
 This library is still a work in progress. There may be some breaking changes in the future, which might require you to replace, re-organize, and rearrange functions or variables included in this library. Use this library at your own risk.
 
-## Supported Board
+## Supported Development Board
 - ESP32 Development Board Family (WiFi)
 - ESP8266 Development Board Family (WiFi)
 
@@ -23,7 +27,7 @@ This library is still a work in progress. There may be some breaking changes in 
     - [WebSockets](https://github.com/Links2004/arduinoWebSockets)
 - Download/clone this repository, and put it into libraries folder of Arduino directory.
 - Compile and upload example sketch.
-- When connected to network, program will print __IP Address__, take note of this address.
+- When connected to network, program will print __IP Address__ on Serial Monitor, take note of this address.
 - In Controller app home page, tap Wi-Fi icon on top right corner, this will route you to connection setup page.
 - Input the IP Address printed on serial monitor to address field.
 - Press __Connect__.
@@ -62,7 +66,7 @@ Inside loop(), do not forget to call,
 `delay()` function use is discouraged, because it blocks the program routine. It might cause the websocket connection to drop. Use `millis()` instead, and create if statement to execute routine every certain time period. 
 
 ## Examples
-Two sample codes provided to demonstate basic functionality of this library, and the Controller app.
+Sample sketch are provided to demo the functionality of the App.
 
 ## Features
 ### Joystick
@@ -72,17 +76,43 @@ In Controller app, Joystick movement will generate 5 data, [x, y, r, theta, inte
 - __intensity__ is the relative distance of pad from center circle to outer circle in percentage out of 100.
 
 #### Getters
-`ObjectName.getX()` -> Return x coordinate as double.
-`ObjectName.getY()` -> Return y coordinate as double.
+`ControllerName.joystick.getX()` -> Return x coordinate as __double__.
 
-`ObjectName.getR()` -> Return range value as double.
+`ControllerName.joystick.getY()` -> Return y coordinate as __double__.
 
-`ObjectName.getTheta()` -> Return angle as double.
+`ControllerName.joystick.getR()` -> Return range value as __double__.
 
-`ObjectName.getIntensity()` -> Return intensity  as double.
+`ControllerName.joystick.getTheta()` -> Return angle as __double__.
 
-`ObjectName.getButtonState()` -> Return button state as boolean.
+`ControllerName.joystick.getIntensity()` -> Return intensity  as __double__.
+
+`ControllerName.joystick.getButtonState()` -> Return button state as __bool__.
 
 All of these datas are sent to the server via WiFi on selected protocol, parsed, and ready to be used.
 
 There is a small deadzone in the middle of joystick to prevent unwanted control motion.
+
+### Color Picker
+Pick any color on color wheel. There are two modes available:
+- Update -> when pressed, app will send color info to the board.
+- Continuous -> triggered by long-press the update button, will continously send color data as user pick colors
+
+#### Getters
+`ControllerName.colorPicker.getR()` -> Return Red component of RGB color as __int__.
+
+`ControllerName.colorPicker.getG()` -> Return Red component of RGB color as __int__.
+
+`ControllerName.colorPicker.getB()` -> Return Red component of RGB color as __int__.
+
+`ControllerName.colorPicker.getH()` -> Return Red component of RGB color as __double__.
+
+`ControllerName.colorPicker.getS()` -> Return Red component of RGB color as __double__.
+
+`ControllerName.colorPicker.getV()` -> Return Red component of RGB color as __double__.
+
+### Button Array
+Set state of button individually or all button at once. App will send 12 button states as string. The data will then be parsed and processed, and then user can get state of each button pressed in boolean.
+
+#### Getters
+`ControllerName.buttonArray.getButtonArrayState(button)` -> Return button state as __bool__.
+User need to specify which button state to get by passing number 0-11 as parameter to getter function.
