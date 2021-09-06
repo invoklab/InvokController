@@ -1,11 +1,7 @@
 # Invok Controller
 
 ## What is this library?
-Invok Controller library is a wrapper library based on [WiFi](https://github.com/arduino-libraries/WiFi), [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi), and [WebSockets](https://github.com/Links2004/arduinoWebSockets) library. This library is used for connecting development boards to the [Controller](https://play.google.com/store/apps/details?id=com.invokcontroller.app) app through various protocol. Controller App is now available on Google Play.
-
-
-
-
+Invok Controller library is a wrapper library based on [WiFi](https://github.com/arduino-libraries/WiFi), [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi), and [WebSockets](https://github.com/Links2004/arduinoWebSockets) library. This library is used for connecting development boards to the [Controller](https://play.google.com/store/apps/details?id=com.invokcontroller.app) app. Controller App is now available on Google Play.
 
 ## Disclaimer
 This library is still a work in progress. There may be some breaking changes in the future, which might require you to replace, re-organize, and rearrange functions or variables included in this library. Use this library at your own risk.
@@ -20,7 +16,7 @@ This library is still a work in progress. There may be some breaking changes in 
 - Receive control data from Controller app
 
 ## Quickstart
-- Download the Controller app from Google Play Store.
+- Download the [Controller](https://play.google.com/store/apps/details?id=com.invokcontroller.app) app from Google Play Store.
 - Install the following library:
     - [WiFi](https://github.com/arduino-libraries/WiFi)
     - [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi)
@@ -98,17 +94,17 @@ Pick any color on color wheel. There are two modes available:
 - Continuous -> triggered by long-press the update button, will continously send color data as user pick colors
 
 #### Getters
-`ControllerName.colorPicker.getR()` -> Return Red component of RGB color as __int__.
+`ControllerName.colorPicker.getR()` -> Return Red component of RGB color space as __int__.
 
-`ControllerName.colorPicker.getG()` -> Return Red component of RGB color as __int__.
+`ControllerName.colorPicker.getG()` -> Return Green component of RGB color space as __int__.
 
-`ControllerName.colorPicker.getB()` -> Return Red component of RGB color as __int__.
+`ControllerName.colorPicker.getB()` -> Return Blue component of RGB color space as __int__.
 
-`ControllerName.colorPicker.getH()` -> Return Red component of RGB color as __double__.
+`ControllerName.colorPicker.getH()` -> Return Hue component of HSV color space as __double__.
 
-`ControllerName.colorPicker.getS()` -> Return Red component of RGB color as __double__.
+`ControllerName.colorPicker.getS()` -> Return Saturation component of HSV color space as __double__.
 
-`ControllerName.colorPicker.getV()` -> Return Red component of RGB color as __double__.
+`ControllerName.colorPicker.getV()` -> Return Value component of HSV color space as __double__.
 
 ### Button Array
 Set state of button individually or all button at once. App will send 12 button states as string. The data will then be parsed and processed, and then user can get state of each button pressed in boolean.

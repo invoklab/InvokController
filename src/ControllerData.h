@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-#define NUM_OF_DATA 10
-
 using namespace std;
 class ControllerData{
   private:
@@ -22,7 +20,7 @@ class ControllerData{
     double y = 0.0;
     double intensity = 0.0;
     bool buttonState = false;
-    bool buttonArrayState[12] = {0};
+    
   
   public:
     // ---------- Constructor ----------
@@ -35,7 +33,7 @@ class ControllerData{
     void setTheta(string theta);
     void setIntensity(string intensity);
     void setButtonState(string state);
-    void setButtonArrayState(vector<string> state);
+    
 
     // ---------- Getters ----------
     double getX();
@@ -44,7 +42,7 @@ class ControllerData{
     double getTheta();
     double getIntensity();
     bool getButtonState();
-    bool getButtonArrayState(int button);
+    
 };
 
 #endif

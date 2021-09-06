@@ -10,8 +10,6 @@
 
 #include <string>
 
-#define NUM_OF_DATA 10
-
 using namespace std;
 class ColorData{
   private:

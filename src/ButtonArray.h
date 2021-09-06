@@ -8,18 +8,21 @@
 #ifndef BUTTON_ARRAY_H
 #define BUTTON_ARRAY_H
 
-#include <ControllerData.h>
 #include <string>
 #include <vector>
 
 using namespace std;
 
-class ButtonArray : public ControllerData {
+class ButtonArray {
+  private:
+    bool buttonArrayState[12] = {0};
   public:
     // ---------- Constructor ----------
     ButtonArray();
 
     void updateData(vector<string> parsedData);
+    void setButtonArrayState(vector<string> state);
+    bool getButtonArrayState(int button);
 };
 
 #endif

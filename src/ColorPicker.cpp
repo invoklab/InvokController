@@ -4,7 +4,7 @@
   1 September 2021
 */
 
-#include<ColorPicker.h>>
+#include<ColorPicker.h>
 
 // ---------- Constructor ----------
 ColorPicker::ColorPicker(){};

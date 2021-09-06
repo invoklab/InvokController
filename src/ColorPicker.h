@@ -8,7 +8,7 @@
 #ifndef COLORPICKER_H
 #define COLORPICKER_H
 
-#include <ColorData.h>>
+#include <ColorData.h>
 #include <string>
 #include <vector>
 
