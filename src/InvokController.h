@@ -40,6 +40,8 @@ class Controller{
     string message="";
     IPAddress localIP;
     bool _isConnected = false;
+    vector<string> parsedDataVector{};
+    string command = "";
 
   public:
     // ---------- Constructor ---------- 

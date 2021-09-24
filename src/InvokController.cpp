@@ -110,6 +110,9 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
         Serial.printf("Client [%u] Connection from ", num);
         Serial.println(ip.toString());
         this->_isConnected = true;
+
+        // Respond once when connection established
+        this->websocket.sendTXT(num, "hello");
       } else {
         Serial.printf("Connection refused, already connected to client\n");
       }
@@ -119,44 +122,35 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
     case WStype_TEXT:
       // Cast payload to string
       this->rawData = string(reinterpret_cast<char*>(const_cast<uint8_t*>(payload)));
+      this->message = this->rawData;
       
-      if(this->rawData.compare("PING") == 0){
-        // Heartbeat routine
-        this->websocket.sendTXT(num, "PONG");
-      } else {
-        // Call callback function to process message
-        // Parse the message
 
-        this->message = this->rawData;
+      #ifdef DEBUG
+        Serial.printf("Message data is %s \n", this->message.c_str());
+      #endif
 
+      this->parsedDataVector.reserve(10);
+      this->parsedDataVector = parsecpp(this->message, ",");
+      this->command = parsedDataVector[0];
+
+      if(command.compare("cms") == 0){
+        this->response = "sms," + parsedDataVector[1];
+        this->websocket.sendTXT(num, response.c_str());
+        this->response.clear();
         #ifdef DEBUG
-          Serial.printf("Message data is %s \n", this->message.c_str());
+          onMessageCallback(num, parsedDataVector[1]);
         #endif
-
-        vector<string> parsedDataVector{};
-        parsedDataVector.reserve(10);
-        parsedDataVector = parsecpp(this->message, ",");
-
-        string command = parsedDataVector[0];
-        
-        if(command.compare("cms") == 0){
-          this->response = "sms," + parsedDataVector[1];
-          this->websocket.sendTXT(num, response.c_str());
-          this->response.clear();
-          #ifdef DEBUG
-            onMessageCallback(num, parsedDataVector[1]);
-          #endif
-        } else if (command.compare("joystick") == 0){
-          // Update Joystick Data
-          joystick.updateData(parsedDataVector);
-        } else if (command.compare("cpk") == 0 ){
-          // Update Color Data
-          colorPicker.updateData(parsedDataVector);
-        } else if (command.compare("bar") == 0 ){
-          // Update Button Array Data
-          buttonArray.updateData(parsedDataVector);
-        }
+      } else if (command.compare("joystick") == 0){
+        // Update Joystick Data
+        joystick.updateData(parsedDataVector);
+      } else if (command.compare("cpk") == 0 ){
+        // Update Color Data
+        colorPicker.updateData(parsedDataVector);
+      } else if (command.compare("bar") == 0 ){
+        // Update Button Array Data
+        buttonArray.updateData(parsedDataVector);
       }
+      
       break;
 
     // For everything else: do nothing
