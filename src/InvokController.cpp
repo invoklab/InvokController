@@ -78,6 +78,10 @@ void Controller::setMessage(string data){
   this->message = data;
 }
 
+void Controller::setDataArrived(bool state){
+  this->dataArrived = state;
+}
+
 // ------------------------------ Getters ------------------------------
 
 IPAddress Controller::getLocalIP(){
@@ -91,6 +95,10 @@ bool Controller::isConnected(){
 
 string Controller::getMessage(){
   return this->message;
+}
+
+bool Controller::isDataArrived(){
+  return this->dataArrived;
 }
 
 void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
@@ -123,8 +131,8 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
       // Cast payload to string
       this->rawData = string(reinterpret_cast<char*>(const_cast<uint8_t*>(payload)));
       this->message = this->rawData;
+      this->dataArrived = true;
       
-
       #ifdef DEBUG
         Serial.printf("Message data is %s \n", this->message.c_str());
       #endif
@@ -149,6 +157,9 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
       } else if (command.compare("bar") == 0 ){
         // Update Button Array Data
         buttonArray.updateData(parsedDataVector);
+      } else if (command.compare("slider") == 0){
+        // Update Slider Data
+        slider.updateData(parsedDataVector);
       }
       
       break;

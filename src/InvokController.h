@@ -22,6 +22,7 @@
 #include <Joystick.h>
 #include <ColorPicker.h>
 #include <ButtonArray.h>
+#include <Slider.h>
 #include <string>
 #include <vector>
 
@@ -42,6 +43,7 @@ class Controller{
     bool _isConnected = false;
     vector<string> parsedDataVector{};
     string command = "";
+    bool dataArrived = false;
 
   public:
     // ---------- Constructor ---------- 
@@ -58,22 +60,30 @@ class Controller{
     void setWebsocketPort(int port);
     void setAuthorisation(string user, string pass);
     void setMessage(string data);
+    void setDataArrived(bool state);
 
     // ---------- Getters ----------
     bool isConnected();
     string getMessage();
+    bool isDataArrived();
     
     void printIP();
 
+    // ---------- Callback ----------
     void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
     void onMessageCallback(uint8_t num, string message);
 
     vector<string> parsecpp(string data, string delim);
     IPAddress getLocalIP();
+
+    // ---------- Object -----------
     WebSocketsServer websocket = WebSocketsServer(80);
     Joystick joystick;
     ColorPicker colorPicker;
     ButtonArray buttonArray;
+    Slider slider;
+
+    
 };
 
 #endif
