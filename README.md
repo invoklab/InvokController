@@ -110,5 +110,12 @@ Pick any color on color wheel. There are two modes available:
 Set state of button individually or all button at once. App will send 12 button states as string. The data will then be parsed and processed, and then user can get state of each button pressed in boolean.
 
 #### Getters
-`ControllerName.buttonArray.getButtonArrayState(button)` -> Return button state as __bool__.
-User need to specify which button state to get by passing number 0-11 as parameter to getter function.
+`ControllerName.buttonArray.getButtonArrayState(int button)` -> Return button state as __bool__.
+User need to specify which button state to get by passing number 0-11 (correspond to button 1 - 12) as parameter to getter function.
+
+### Sliders
+Set state of slider individually or all sliders at once with master slider. App will send 6 slider value as string. The data will then be parsed and processed, and then user can get value of each slider in double with single precision (xx.x).
+
+#### Getters
+`ControllerName.slider.getSliderData(int slider)` -> Return slider value as __double__.
+User need to specify which slider to get by passing number 0-5 (correspond to slider 1 - 6) as parameter to getter function.
