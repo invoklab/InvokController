@@ -14,7 +14,7 @@ void ButtonArray::updateData(vector<string> parsedData){
 }
 
 void ButtonArray::setButtonArrayState(vector<string> state){
-  for(int i = 0; i < sizeof(this->buttonArrayState); i++){
+  for(size_t i = 0; i < sizeof(this->buttonArrayState); i++){
     if(state[i+1].compare("1") == 0){
       this->buttonArrayState[i] = true;
     } else {
