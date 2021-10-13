@@ -28,52 +28,57 @@
 
 #define NUM_OF_DATA 15
 
-using namespace std;
 class Controller{
   private:
-    string SSID = "";
-    string password = "";
-    string hostname = "ESPServer";
+    std::string SSID = "";
+    std::string password = "";
+    std::string hostname = "ESPServer";
     int websocketPort = 80;
-    string connectionType = "";
-    string response = "";
-    string rawData = "";
-    string message="";
+    std::string connectionType = "";
+    std::string response = "";
+    std::string rawData = "";
+    std::string message="";
     IPAddress localIP;
     bool _isConnected = false;
-    vector<string> parsedDataVector{};
-    string command = "";
+    std::vector<std::string> parsedDataVector{};
+    std::string command = "";
     bool dataArrived = false;
+    std::string printString = "";
+    uint8_t connectedIndex = 0;
+    std::string incomingCommand = "";
 
   public:
     // ---------- Constructor ---------- 
     Controller();
-    Controller(string connectionType);
+    Controller(std::string connectionType);
 
     void begin();
     void loop();
 
     // ---------- Setters ----------
-    void setSSID(string SSID);
-    void setSSIDPassword(string password);
-    void setWifiHostname(string hostname);
+    void setSSID(std::string SSID);
+    void setSSIDPassword(std::string password);
+    void setWifiHostname(std::string hostname);
     void setWebsocketPort(int port);
-    void setAuthorisation(string user, string pass);
-    void setMessage(string data);
+    void setAuthorisation(std::string user, std::string pass);
+    void setMessage(std::string data);
     void setDataArrived(bool state);
+    void print(std::string toPrint); // For serial monitor printing
+    void setIncomingCommand(std::string command);
 
     // ---------- Getters ----------
     bool isConnected();
-    string getMessage();
+    std::string getMessage();
     bool isDataArrived();
+    std::string getIncomingCommand();
     
     void printIP();
 
     // ---------- Callback ----------
     void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
-    void onMessageCallback(uint8_t num, string message);
+    void onMessageCallback(uint8_t num, std::string message);
 
-    vector<string> parsecpp(string data, string delim);
+    std::vector<std::string> parsecpp(std::string data, std::string delim);
     IPAddress getLocalIP();
 
     // ---------- Object -----------
@@ -82,8 +87,6 @@ class Controller{
     ColorPicker colorPicker;
     ButtonArray buttonArray;
     Slider slider;
-
-    
 };
 
 #endif

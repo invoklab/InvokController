@@ -11,7 +11,7 @@ Controller::Controller(){
   this->connectionType = "websocket"; // Default to websocket
 }
 
-Controller::Controller(string connectionType){
+Controller::Controller(std::string connectionType){
   this->connectionType = connectionType; 
 }
 
@@ -58,15 +58,15 @@ void Controller::loop(){
 
 // ------------------------------ Setters ------------------------------
 
-void Controller::setSSID(string SSID){
+void Controller::setSSID(std::string SSID){
   this->SSID = SSID;
 }
 
-void Controller::setSSIDPassword(string password){
+void Controller::setSSIDPassword(std::string password){
   this->password = password;
 }
 
-void Controller::setWifiHostname(string hostname){
+void Controller::setWifiHostname(std::string hostname){
   this->hostname = hostname;
 }
 
@@ -74,12 +74,16 @@ void Controller::setWebsocketPort(int port){
   this->websocketPort = port;
 }
 
-void Controller::setMessage(string data){
+void Controller::setMessage(std::string data){
   this->message = data;
 }
 
 void Controller::setDataArrived(bool state){
   this->dataArrived = state;
+}
+
+void Controller::setIncomingCommand(std::string command){
+  this->incomingCommand = command;
 }
 
 // ------------------------------ Getters ------------------------------
@@ -101,6 +105,19 @@ bool Controller::isDataArrived(){
   return this->dataArrived;
 }
 
+void Controller::print(std::string toPrint){
+  if(_isConnected){
+    printString = "monitor," + toPrint;
+    this->websocket.sendTXT(connectedIndex, printString.c_str());
+  }
+}
+
+string Controller::getIncomingCommand(){
+  std::string buffer = incomingCommand;
+  // setIncomingCommand("");
+  return buffer;
+}
+
 void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
   // Figure out the type of WebSocket event
   switch(type) {
@@ -114,13 +131,14 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
     // New client has connected
     case WStype_CONNECTED:
       if(!_isConnected){
+        this->connectedIndex = num;
         IPAddress ip = this->websocket.remoteIP(num);
         Serial.printf("Client [%u] Connection from ", num);
         Serial.println(ip.toString());
         this->_isConnected = true;
 
         // Respond once when connection established
-        this->websocket.sendTXT(num, "hello");
+        // this->websocket.sendTXT(num, "hello");
       } else {
         Serial.printf("Connection refused, already connected to client\n");
       }
@@ -129,7 +147,7 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
     // Message Received
     case WStype_TEXT:
       // Cast payload to string
-      this->rawData = string(reinterpret_cast<char*>(const_cast<uint8_t*>(payload)));
+      this->rawData = std::string(reinterpret_cast<char*>(const_cast<uint8_t*>(payload)));
       this->message = this->rawData;
       this->dataArrived = true;
       
@@ -160,6 +178,15 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
       } else if (command.compare("slider") == 0){
         // Update Slider Data
         slider.updateData(parsedDataVector);
+      } else if (command.compare("serial") == 0){
+        // Update Incoming Command
+        if(parsedDataVector[1].compare("initrequest") == 0){
+          String initResponse = "Connected to Server " + this->localIP.toString();
+          this->print(initResponse.c_str());
+        } else {
+          setIncomingCommand(rawData.substr(parsedDataVector[0].length()+1));
+        }
+        
       }
       
       break;
@@ -177,7 +204,7 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
   }
 }
 
-void Controller::onMessageCallback(uint8_t num, string message){
+void Controller::onMessageCallback(uint8_t num, std::string message){
   Serial.printf("Channel [%d], Message is %s, echoed to client.\n", num, message.c_str());
 }
 
@@ -186,17 +213,17 @@ void Controller::printIP(){
   Serial.println(this->localIP);
 }
 
-void Controller::setAuthorisation(string user, string pass){
+void Controller::setAuthorisation(std::string user, std::string pass){
   this->websocket.setAuthorization(user.c_str(), pass.c_str());
 }
 
-vector<string> Controller::parsecpp(string data, string delim){
-  vector<string> myVector{};
+std::vector<std::string> Controller::parsecpp(std::string data, std::string delim){
+  std::vector<std::string> myVector{};
   
   myVector.reserve(NUM_OF_DATA);
   int pos = 0;
 
-  while((pos = data.find(delim)) != string::npos){
+  while((pos = data.find(delim)) != std::string::npos){
     myVector.push_back(data.substr(0, pos));
     data.erase(0, pos + delim.length());
   }
