@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 class ControllerData{
   private:
     double r = 0.0;
@@ -27,12 +26,12 @@ class ControllerData{
     ControllerData();
 
     // ---------- Setters ----------
-    void setX(string x);
-    void setY(string y);
-    void setR(string r);
-    void setTheta(string theta);
-    void setIntensity(string intensity);
-    void setButtonState(string state);
+    void setX(std::string x);
+    void setY(std::string y);
+    void setR(std::string r);
+    void setTheta(std::string theta);
+    void setIntensity(std::string intensity);
+    void setButtonState(std::string state);
     
 
     // ---------- Getters ----------

@@ -9,7 +9,7 @@
 // ---------- Constructor ----------
 Slider::Slider(){};
 
-void Slider::updateData(vector<string> parsedData){
+void Slider::updateData(std::vector<std::string> parsedData){
   for (size_t i = 0; i < (sizeof(this->sliderData)/sizeof(this->sliderData[0])); i++)
   {
     this->sliderData[i] = stod(parsedData.at(i+1));

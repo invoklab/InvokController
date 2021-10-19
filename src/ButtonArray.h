@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 class ButtonArray {
   private:
     bool buttonArrayState[12] = {0};
@@ -20,8 +18,8 @@ class ButtonArray {
     // ---------- Constructor ----------
     ButtonArray();
 
-    void updateData(vector<string> parsedData);
-    void setButtonArrayState(vector<string> state);
+    void updateData(std::vector<std::string> parsedData);
+    void setButtonArrayState(std::vector<std::string> state);
     bool getButtonArrayState(int button);
 };
 

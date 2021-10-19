@@ -9,6 +9,7 @@
 // ------------------------------ Constructor ------------------------------
 Controller::Controller(){
   this->connectionType = "websocket"; // Default to websocket
+  Serial.begin(115200);
 }
 
 Controller::Controller(std::string connectionType){
@@ -18,35 +19,62 @@ Controller::Controller(std::string connectionType){
 void Controller::begin(){
   if(this->connectionType == "websocket"){
     // Begin Wifi connection routine
+    Serial.println("\nStarting Wi-Fi Routine\n");
+    #ifdef DEBUG
+      wm.setDebugOutput(true);
+    #else
+      wm.setDebugOutput(false);
+    #endif
 
     // Set device as station mode
     WiFi.mode(WIFI_STA);
 
-    #ifdef ESP32
-      // WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
-      WiFi.setHostname(this->hostname.c_str());
-    #else 
-      WiFi.hostname(this->hostname.c_str());
-    #endif
+    // Set Internal LED Pin
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, LOW);
 
-    Serial.printf("\nConnecting to %s\n", this->SSID.c_str());
-    WiFi.disconnect();
-    WiFi.begin(this->SSID.c_str(), this->password.c_str());
-    while ( WiFi.status() != WL_CONNECTED ) {
-      delay(1000);
-      Serial.print(".");
+    // #ifdef ESP32
+    //   // WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
+    //   WiFi.setHostname(this->hostname.c_str());
+    // #else 
+    //   WiFi.hostname(this->hostname.c_str());
+    // #endif
+
+    // Set IP Address
+    wm.setAPStaticIPConfig(IPAddress(1,1,1,1), IPAddress(1,1,1,1), IPAddress(255,255,255,0));
+    bool res;
+    res = wm.autoConnect(); // auto generated AP name from chipid
+
+    if(!res) {
+      #ifdef DEBUG
+        Serial.println("Failed to connect");
+      #endif
+        // ESP.restart();
+    } 
+    else {
+      //if you get here you have connected to the WiFi    
+      #ifdef DEBUG
+        Serial.println("Connected to Wi-Fi");
+        Serial.println(wm.getDefaultAPName());
+        Serial.println(WiFi.SSID());  
+        Serial.println(WiFi.localIP());
+      #endif
+
+      getLocalIP();
+
+      // Start MDNS Service
+      mdnsBegin();
+
+      // Start WebSocket server and assign callback
+      // Set Websocket server
+      this->websocket = WebSocketsServer(this->websocketPort);
+
+      // Begin websocket routine
+      this->websocket.begin();
+      this->websocket.onEvent(std::bind(&Controller::onWebSocketEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+
+      digitalWrite(LED_BUILTIN, HIGH);
     }
-    getLocalIP();
-    Serial.println("");
-    Serial.print("RRSI: ");
-    Serial.println(WiFi.RSSI());
-
-    // Set Websocket server
-    this->websocket = WebSocketsServer(this->websocketPort);
-
-    // Begin websocket routine
-    this->websocket.begin();
-    this->websocket.onEvent(std::bind(&Controller::onWebSocketEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
   }
 }
 
@@ -54,6 +82,10 @@ void Controller::loop(){
   if(this->connectionType == "websocket"){
     this->websocket.loop();
   }
+
+  #ifdef ESP8266
+    MDNS.update();
+  #endif
 }
 
 // ------------------------------ Setters ------------------------------
@@ -86,6 +118,10 @@ void Controller::setIncomingCommand(std::string command){
   this->incomingCommand = command;
 }
 
+void Controller::setHostname(std::string name){
+  this->hostname = name;
+}
+
 // ------------------------------ Getters ------------------------------
 
 IPAddress Controller::getLocalIP(){
@@ -97,7 +133,7 @@ bool Controller::isConnected(){
   return this->_isConnected;
 }
 
-string Controller::getMessage(){
+std::string Controller::getMessage(){
   return this->message;
 }
 
@@ -112,11 +148,17 @@ void Controller::print(std::string toPrint){
   }
 }
 
-string Controller::getIncomingCommand(){
+std::string Controller::getIncomingCommand(){
   std::string buffer = incomingCommand;
   // setIncomingCommand("");
   return buffer;
 }
+
+std::string Controller::getHostname(){
+  return this->hostname;
+}
+
+// ---------------------------------------- Callback ---------------------------------------------
 
 void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
   // Figure out the type of WebSocket event
@@ -137,8 +179,15 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
         Serial.println(ip.toString());
         this->_isConnected = true;
 
+        //  Close mDNS
+        #ifdef ESP8266
+          MDNS.close();
+        #else 
+          MDNS.end();
+        #endif
+
         // Respond once when connection established
-        // this->websocket.sendTXT(num, "hello");
+
       } else {
         Serial.printf("Connection refused, already connected to client\n");
       }
@@ -186,7 +235,6 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
         } else {
           setIncomingCommand(rawData.substr(parsedDataVector[0].length()+1));
         }
-        
       }
       
       break;
@@ -209,7 +257,7 @@ void Controller::onMessageCallback(uint8_t num, std::string message){
 }
 
 void Controller::printIP(){
-  Serial.print("Connected IP Address ");
+  Serial.print("Connected to Wi-Fi, IP Address: ");
   Serial.println(this->localIP);
 }
 
@@ -221,7 +269,7 @@ std::vector<std::string> Controller::parsecpp(std::string data, std::string deli
   std::vector<std::string> myVector{};
   
   myVector.reserve(NUM_OF_DATA);
-  int pos = 0;
+  size_t pos = 0;
 
   while((pos = data.find(delim)) != std::string::npos){
     myVector.push_back(data.substr(0, pos));
@@ -230,5 +278,18 @@ std::vector<std::string> Controller::parsecpp(std::string data, std::string deli
   // Push last substring to vector
   myVector.push_back(data.substr(0));
   return myVector;
+}
+
+void Controller::mdnsBegin(){
+  if (!MDNS.begin(getHostname().c_str())) {             // Start the mDNS responder for esp8266.local
+  #ifdef DEBUG
+    Serial.println("Error setting up MDNS responder!");
+  #endif
+  }
+  #ifdef DEBUG
+    Serial.println("mDNS responder started");
+  #endif
+  MDNS.addService("invc", "tcp", 80);
+  startTime = millis();
 }
 

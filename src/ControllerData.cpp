@@ -10,27 +10,27 @@
 ControllerData::ControllerData(){};
 
 // ---------- Setters ----------
-void ControllerData::setX(string x){
+void ControllerData::setX(std::string x){
   this->x = stod(x);
 }
 
-void ControllerData::setY(string y){
+void ControllerData::setY(std::string y){
   this->y = stod(y);
 }
 
-void ControllerData::setR(string r){
+void ControllerData::setR(std::string r){
   this->r = stod(r);
 }
 
-void ControllerData::setTheta(string theta){
+void ControllerData::setTheta(std::string theta){
   this->theta = stod(theta);
 }
 
-void ControllerData::setIntensity(string intensity){
+void ControllerData::setIntensity(std::string intensity){
   this->intensity = stod(intensity);
 }
 
-void ControllerData::setButtonState(string state){
+void ControllerData::setButtonState(std::string state){
   if(state.compare("true") == 0){
     this->buttonState = true;
   } else {

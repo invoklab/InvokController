@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 
 class Slider {
   private:
@@ -21,7 +20,7 @@ class Slider {
     // ---------- Constructor ----------
     Slider();
 
-    void updateData(vector<string> parsedData);
+    void updateData(std::vector<std::string> parsedData);
     double getSliderData(int whichSlider);
 };
 

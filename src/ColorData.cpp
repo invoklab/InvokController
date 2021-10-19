@@ -10,31 +10,31 @@
 ColorData::ColorData(){};
 
 // ---------- Setters ----------
-void ColorData::setA(string a){
+void ColorData::setA(std::string a){
   this->a = stoi(a);
 }
 
-void ColorData::setR(string r){
+void ColorData::setR(std::string r){
   this->r = stoi(r);
 }
 
-void ColorData::setG(string g){
+void ColorData::setG(std::string g){
   this->g = stoi(g);
 }
 
-void ColorData::setB(string b){
+void ColorData::setB(std::string b){
   this->b = stoi(b);
 }
 
-void ColorData::setH(string h){
+void ColorData::setH(std::string h){
   this->h = stod(h);
 }
 
-void ColorData::setS(string s){
+void ColorData::setS(std::string s){
   this->s = stod(s);
 }
 
-void ColorData::setV(string v){
+void ColorData::setV(std::string v){
   this->v = stod(v);
 }
 

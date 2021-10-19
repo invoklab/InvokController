@@ -14,11 +14,14 @@
 
 #ifdef ESP32
   #include <WiFi.h>
+  #include <ESPmDNS.h>
 #else 
   #include <ESP8266WiFi.h>
+  #include <ESP8266mDNS.h> 
 #endif
 
 #include <WebSocketsServer.h>
+#include <WiFiManager.h>
 #include <Joystick.h>
 #include <ColorPicker.h>
 #include <ButtonArray.h>
@@ -32,7 +35,6 @@ class Controller{
   private:
     std::string SSID = "";
     std::string password = "";
-    std::string hostname = "ESPServer";
     int websocketPort = 80;
     std::string connectionType = "";
     std::string response = "";
@@ -46,6 +48,7 @@ class Controller{
     std::string printString = "";
     uint8_t connectedIndex = 0;
     std::string incomingCommand = "";
+    std::string hostname = "Invok Controller";
 
   public:
     // ---------- Constructor ---------- 
@@ -65,14 +68,18 @@ class Controller{
     void setDataArrived(bool state);
     void print(std::string toPrint); // For serial monitor printing
     void setIncomingCommand(std::string command);
+    void setHostname(std::string name);
 
     // ---------- Getters ----------
     bool isConnected();
     std::string getMessage();
     bool isDataArrived();
     std::string getIncomingCommand();
-    
     void printIP();
+    std::string getHostname();
+
+    // Functions
+    void mdnsBegin();
 
     // ---------- Callback ----------
     void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
@@ -87,6 +94,10 @@ class Controller{
     ColorPicker colorPicker;
     ButtonArray buttonArray;
     Slider slider;
+    WiFiManager wm;
+
+    // Timer
+    double startTime;
 };
 
 #endif

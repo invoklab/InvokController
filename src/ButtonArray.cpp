@@ -9,11 +9,11 @@
 // ---------- Constructor ----------
 ButtonArray::ButtonArray(){};
 
-void ButtonArray::updateData(vector<string> parsedData){
+void ButtonArray::updateData(std::vector<std::string> parsedData){
   setButtonArrayState(parsedData);
 }
 
-void ButtonArray::setButtonArrayState(vector<string> state){
+void ButtonArray::setButtonArrayState(std::vector<std::string> state){
   for(size_t i = 0; i < sizeof(this->buttonArrayState); i++){
     if(state[i+1].compare("1") == 0){
       this->buttonArrayState[i] = true;

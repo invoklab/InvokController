@@ -10,7 +10,6 @@
 
 #include <string>
 
-using namespace std;
 class ColorData{
   private:
     int a = 0;
@@ -26,13 +25,13 @@ class ColorData{
     ColorData();
 
     // ---------- Setters ----------
-    void setA(string a);
-    void setR(string r);
-    void setG(string g);
-    void setB(string b);
-    void setH(string h);
-    void setS(string s);
-    void setV(string v);
+    void setA(std::string a);
+    void setR(std::string r);
+    void setG(std::string g);
+    void setB(std::string b);
+    void setH(std::string h);
+    void setS(std::string s);
+    void setV(std::string v);
 
 
     // ---------- Getters ----------

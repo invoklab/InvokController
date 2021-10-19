@@ -9,7 +9,7 @@
 // ---------- Constructor ----------
 ColorPicker::ColorPicker(){};
 
-void ColorPicker::updateData(vector<string> parsedData){
+void ColorPicker::updateData(std::vector<std::string> parsedData){
   setA(parsedData.at(1)); setR(parsedData.at(2));
   setG(parsedData.at(3)); setB(parsedData.at(4));
   setH(parsedData.at(5)); setS(parsedData.at(6));

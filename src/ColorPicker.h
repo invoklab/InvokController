@@ -12,14 +12,12 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 class ColorPicker : public ColorData {
   public:
     // ---------- Constructor ----------
     ColorPicker();
 
-    void updateData(vector<string> parsedData);
+    void updateData(std::vector<std::string> parsedData);
 };
 
 #endif

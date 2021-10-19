@@ -12,14 +12,12 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 class Joystick : public ControllerData {
   public:
     // ---------- Constructor ----------
     Joystick();
 
-    void updateData(vector<string> parsedData);
+    void updateData(std::vector<std::string> parsedData);
 };
 
 #endif
