@@ -13,7 +13,7 @@ double capturedTime = 0;
 int variable = 0;
 
 // Controller Object Instantiation
-Controller myController = Controller("websocket");
+Controller myController("websocket");
 
 void setup() {
   Serial.begin(115200);

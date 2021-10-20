@@ -8,7 +8,7 @@
 #include <InvokController.h>
 
 // Controller Object Instantiation
-Controller myController = Controller("websocket");
+Controller myController("websocket");
 
 // Timer
 double elapsedTime = 0;

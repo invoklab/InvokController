@@ -7,7 +7,7 @@
 #include <InvokController.h>
 
 // Controller Object Instantiation
-Controller myController = Controller("websocket");
+Controller myController("websocket");
 
 void setup() {
   Serial.begin(115200);
