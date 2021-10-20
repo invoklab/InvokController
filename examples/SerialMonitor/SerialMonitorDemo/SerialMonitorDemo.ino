@@ -15,16 +15,11 @@ int variable = 0;
 // Controller Object Instantiation
 Controller myController = Controller("websocket");
 
-// Replace SSID and PASSWORD with your preffered WiFi Credentials
-const char* SSID = "SSID";
-const char* PASSWORD = "PASSWORD";
-
 void setup() {
   Serial.begin(115200);
 
   // Controller Setup
-  myController.setSSID(SSID);
-  myController.setSSIDPassword(PASSWORD);
+  myController.setHostname("Serial Monitor"); // mDNS
   myController.begin();
   myController.printIP();
 }

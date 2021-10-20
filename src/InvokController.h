@@ -13,9 +13,16 @@
 #define INVOKCONTROLLER_H
 
 #ifdef ESP32
+  #define LED_ON 0x1
+  #define LED_OFF 0x0
   #include <WiFi.h>
   #include <ESPmDNS.h>
-#else 
+  #define LED_BUILTIN 2
+#endif
+
+#ifdef ESP8266
+  #define LED_ON 0x0
+  #define LED_OFF 0x1
   #include <ESP8266WiFi.h>
   #include <ESP8266mDNS.h> 
 #endif

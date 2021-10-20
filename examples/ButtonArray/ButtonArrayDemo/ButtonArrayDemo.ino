@@ -9,23 +9,18 @@
 // Controller Object Instantiation
 Controller myController = Controller("websocket");
 
-// Replace SSID and PASSWORD with your preffered WiFi Credentials
-char* SSID = "SSID";
-char* PASSWORD = "PASSWORD";
-
 void setup() {
   Serial.begin(115200);
 
   // Controller Setup
-  myController.setSSID(SSID);
-  myController.setSSIDPassword(PASSWORD);
+  myController.setHostname("Button Array"); // mDNS
   myController.begin();
   myController.printIP();
 }
 
 void loop() {
 
-  if (myController.isConnected()){
+  if (myController.isDataArrived()){
     Serial.printf("Button State [%s] | [%s] | [%s] | [%s] | [%s] | [%s] | [%s] | [%s] | [%s] | [%s] | [%s] | [%s]\n", 
     myController.buttonArray.getButtonArrayState(0) ? "1" : "0",
     myController.buttonArray.getButtonArrayState(1) ? "1" : "0",
@@ -39,6 +34,7 @@ void loop() {
     myController.buttonArray.getButtonArrayState(9) ? "1" : "0",
     myController.buttonArray.getButtonArrayState(10) ? "1" : "0",
     myController.buttonArray.getButtonArrayState(11) ? "1" : "0");
+    myController.setDataArrived(false); // Flush, reset flag
   }
 
   // Controller Loop

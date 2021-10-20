@@ -14,16 +14,11 @@ Controller myController = Controller("websocket");
 double elapsedTime = 0;
 double nowTime = 0;
 
-// Replace SSID and PASSWORD with your preffered WiFi Credentials
-char* SSID = "SSID";
-char* PASSWORD = "PASSWORD";
-
 void setup() {
   Serial.begin(115200);
 
   // Controller Setup
-  myController.setSSID(SSID);
-  myController.setSSIDPassword(PASSWORD);
+  myController.setHostname("Joystick"); // mDNS
   myController.begin();
   myController.printIP();
 }

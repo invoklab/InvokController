@@ -6,6 +6,11 @@
 
 #include <InvokController.h>
 
+// LED Blinker Timer
+double startTimeLED;
+double elapsedTimeLED;
+bool ledState = false;
+
 // ------------------------------ Constructor ------------------------------
 Controller::Controller(){
   this->connectionType = "websocket"; // Default to websocket
@@ -13,13 +18,14 @@ Controller::Controller(){
 }
 
 Controller::Controller(std::string connectionType){
-  this->connectionType = connectionType; 
+  this->connectionType = connectionType;
+  Serial.begin(115200);
 }
 
 void Controller::begin(){
   if(this->connectionType == "websocket"){
     // Begin Wifi connection routine
-    Serial.println("\nStarting Wi-Fi Routine\n");
+    Serial.println("\nStarting Controller ...\n");
     #ifdef DEBUG
       wm.setDebugOutput(true);
     #else
@@ -31,20 +37,14 @@ void Controller::begin(){
 
     // Set Internal LED Pin
     pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, LOW);
-
-    // #ifdef ESP32
-    //   // WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
-    //   WiFi.setHostname(this->hostname.c_str());
-    // #else 
-    //   WiFi.hostname(this->hostname.c_str());
-    // #endif
+    digitalWrite(LED_BUILTIN, LED_ON);
 
     // Set IP Address
+    Serial.printf("Wi-Fi configuration mode, connect to ESP Wi-Fi, and begin setup");
     wm.setAPStaticIPConfig(IPAddress(1,1,1,1), IPAddress(1,1,1,1), IPAddress(255,255,255,0));
     bool res;
     res = wm.autoConnect(); // auto generated AP name from chipid
-
+    
     if(!res) {
       #ifdef DEBUG
         Serial.println("Failed to connect");
@@ -73,7 +73,8 @@ void Controller::begin(){
       this->websocket.begin();
       this->websocket.onEvent(std::bind(&Controller::onWebSocketEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 
-      digitalWrite(LED_BUILTIN, HIGH);
+      digitalWrite(LED_BUILTIN, LED_OFF);
+      startTimeLED = millis();
     }
   }
 }
@@ -83,9 +84,20 @@ void Controller::loop(){
     this->websocket.loop();
   }
 
-  #ifdef ESP8266
-    MDNS.update();
-  #endif
+  // Built in LED blinker
+  if(!_isConnected){
+    #ifdef ESP8266
+      MDNS.update();
+    #endif
+    elapsedTimeLED = millis() - startTimeLED;
+    if(elapsedTimeLED > 500){
+      ledState = !ledState;
+      digitalWrite(LED_BUILTIN, ledState);
+      startTimeLED = millis();
+    }
+  }
+
+
 }
 
 // ------------------------------ Setters ------------------------------
@@ -167,6 +179,7 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
     // Client has disconnected
     case WStype_DISCONNECTED:
       Serial.printf("Client [%u] Disconnected!\n", num);
+      mdnsBegin();
       this->_isConnected = false;
       break;
 
@@ -185,9 +198,8 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
         #else 
           MDNS.end();
         #endif
-
-        // Respond once when connection established
-
+        
+        digitalWrite(LED_BUILTIN, LED_OFF);
       } else {
         Serial.printf("Connection refused, already connected to client\n");
       }
@@ -234,6 +246,10 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
           this->print(initResponse.c_str());
         } else {
           setIncomingCommand(rawData.substr(parsedDataVector[0].length()+1));
+          if(getIncomingCommand() == "reset"){
+            wm.resetSettings();
+            ESP.restart();
+          }
         }
       }
       
@@ -257,7 +273,7 @@ void Controller::onMessageCallback(uint8_t num, std::string message){
 }
 
 void Controller::printIP(){
-  Serial.print("Connected to Wi-Fi, IP Address: ");
+  Serial.print("\nConnected to Wi-Fi, IP Address: ");
   Serial.println(this->localIP);
 }
 
@@ -281,7 +297,8 @@ std::vector<std::string> Controller::parsecpp(std::string data, std::string deli
 }
 
 void Controller::mdnsBegin(){
-  if (!MDNS.begin(getHostname().c_str())) {             // Start the mDNS responder for esp8266.local
+  std::string mdnsHostname = std::string(getHostname().c_str());
+  if (!MDNS.begin(mdnsHostname.c_str())) {  // Start the mDNS responder for esp8266.local
   #ifdef DEBUG
     Serial.println("Error setting up MDNS responder!");
   #endif
