@@ -4,12 +4,12 @@
 
 Invok Controller library is a wrapper library based on:
 
-  - [WiFi](https://github.com/arduino-libraries/WiFi)
-  - [ESPmDNS] (https://github.com/espressif/arduino-esp32/tree/master/libraries/ESPmDNS)
-  - [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi)
-  - [ESP8266mDNS] (https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266mDNS)
-  - [WebSockets](https://github.com/Links2004/arduinoWebSockets)
-  - [WiFiManager] (https://github.com/tzapu/WiFiManager)
+- [WiFi](https://github.com/arduino-libraries/WiFi)
+- [ESPmDNS](https://github.com/espressif/arduino-esp32/tree/master/libraries/ESPmDNS)
+- [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi)
+- [ESP8266mDNS](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266mDNS)
+- [WebSockets](https://github.com/Links2004/arduinoWebSockets)
+- [WiFiManager](https://github.com/tzapu/WiFiManager)
 
 This library is used for connecting development boards to the [Controller](https://play.google.com/store/apps/details?id=com.invokcontroller.app) app. Controller App is now available on Google Play.
 
@@ -33,12 +33,12 @@ This library is still a work in progress. There may be some breaking changes in 
 
 - Download the [Controller](https://play.google.com/store/apps/details?id=com.invokcontroller.app) app from Google Play Store.
 - Install the following library:
-    - [WiFi](https://github.com/arduino-libraries/WiFi)
-    - [ESPmDNS] (https://github.com/espressif/arduino-esp32/tree/master/libraries/ESPmDNS)
-    - [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi)
-    - [ESP8266mDNS] (https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266mDNS)
-    - [WebSockets](https://github.com/Links2004/arduinoWebSockets)
-    - [WiFiManager] (https://github.com/tzapu/WiFiManager)
+  - [WiFi](https://github.com/arduino-libraries/WiFi)
+  - [ESPmDNS](https://github.com/espressif/arduino-esp32/tree/master/libraries/ESPmDNS)
+  - [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi)
+  - [ESP8266mDNS](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266mDNS)
+  - [WebSockets](https://github.com/Links2004/arduinoWebSockets)
+  - [WiFiManager](https://github.com/tzapu/WiFiManager)
 - Download/clone this repository, and put it into libraries folder of Arduino directory. Ensure you have downloaded the latest version.
 - Compile and upload example sketch.
 - With WiFiManager, you can now setup WiFi without hardcoding SSID and password. After uploading the firmware, connect to ESP Wifi, SSID should be something like ESP_XXXX.
@@ -48,7 +48,7 @@ This library is still a work in progress. There may be some breaking changes in 
 - In Controller app home page, tap Wi-Fi icon on top right corner, this will route you to connection setup page.
 - Input the IP Address printed on serial monitor to address field.
 - Press __Connect__.
-- Status icon on top right corner will turn green when connection is established. 
+- Status icon on top right corner will turn green when connection is established.
 - Test connection by sending message. Server will respond or echo back the same message.
 
 ## Code Setup
@@ -67,7 +67,7 @@ In setup(), initiate serial data transmission,
 
 and continue to call setters function to set wifi credentials.
 
-```
+```c++
 myController.setSSID("YOUR_SSID");
 myController.setSSIDPassword("YOUR_PASSWORD");
 myController.begin();
@@ -79,7 +79,6 @@ Connected IP Address will be printed after printIP() function executes, this is 
 Inside loop(), do not forget to call,
 
 `myController.loop();`
-
 
 `delay()` function use is discouraged, because it blocks the program routine. It might cause the websocket connection to drop. Use `millis()` instead, and create if statement to execute routine every certain time period.
 
@@ -122,7 +121,7 @@ Pick any color on color wheel. There are two modes available:
 - Update -> when pressed, app will send color info to the board.
 - Continuous -> triggered by long-press the update button, will continously send color data as user pick colors
 
-#### Getters
+#### Color Picker Getters
 
 `ControllerName.colorPicker.getR()` -> Return Red component of RGB color space as __int__.
 
@@ -140,7 +139,7 @@ Pick any color on color wheel. There are two modes available:
 
 Set state of button individually or all button at once. App will send 12 button states as string. The data will then be parsed and processed, and then user can get state of each button pressed in boolean.
 
-#### Getters
+#### Button Array Getters
 
 `ControllerName.buttonArray.getButtonArrayState(int button)` -> Return button state as __bool__.
 User need to specify which button state to get by passing number 0-11 (correspond to button 1 - 12) as parameter to getter function.
@@ -149,7 +148,7 @@ User need to specify which button state to get by passing number 0-11 (correspon
 
 Set state of slider individually or all sliders at once with master slider. App will send 6 slider value as string. The data will then be parsed and processed, and then user can get value of each slider in double with single precision (xx.x).
 
-#### Getters
+#### Sliders Getters
 
 `ControllerName.slider.getSliderData(int slider)` -> Return slider value as __double__.
 User need to specify which slider to get by passing number 0-5 (correspond to slider 1 - 6) as parameter to getter function.
@@ -158,9 +157,8 @@ User need to specify which slider to get by passing number 0-5 (correspond to sl
 
 Controller serial monitor act just like Arduino serial monitor. It can send, receive and print data between ESP device and Controller app.
 
-#### Getters
+#### Serial Monitor Getters
 
 `ControllerName.print(std::string stringToPrint)` -> will print 'stringToPrint' in Controller app.
 `ControllerName.getIncomingCommand()` -> Return a __std::string__ received from Controller app.
 `ControllerName.setIncomingCommand(std::string command)` -> Setter function to set the command when it is received from the app. This setter can also be used to flush the buffer by passing empty string as parameter ("").
-
