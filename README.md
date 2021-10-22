@@ -2,7 +2,16 @@
 
 ## What is this library?
 
-Invok Controller library is a wrapper library based on [WiFi](https://github.com/arduino-libraries/WiFi), [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi), and [WebSockets](https://github.com/Links2004/arduinoWebSockets) library. This library is used for connecting development boards to the [Controller](https://play.google.com/store/apps/details?id=com.invokcontroller.app) app. Controller App is now available on Google Play.
+Invok Controller library is a wrapper library based on:
+
+  - [WiFi](https://github.com/arduino-libraries/WiFi)
+  - [ESPmDNS] (https://github.com/espressif/arduino-esp32/tree/master/libraries/ESPmDNS)
+  - [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi)
+  - [ESP8266mDNS] (https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266mDNS)
+  - [WebSockets](https://github.com/Links2004/arduinoWebSockets)
+  - [WiFiManager] (https://github.com/tzapu/WiFiManager)
+
+This library is used for connecting development boards to the [Controller](https://play.google.com/store/apps/details?id=com.invokcontroller.app) app. Controller App is now available on Google Play.
 
 ## Disclaimer
 
@@ -15,8 +24,9 @@ This library is still a work in progress. There may be some breaking changes in 
 
 ## Basic Functionality
 
+- WiFiManager, this awesome library lets you connect you ESP board to WiFi without harcoding the SSID and password.
 - Setting ESPs as Websocket Server
-- Basic PING/PONG heartbeat routine through message (opcode 0x9 & 0xA not supported yet)
+- WebSocket PING/PONG heartbeat routine
 - Receive control data from Controller app
 
 ## Quickstart
