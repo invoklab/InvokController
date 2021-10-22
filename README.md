@@ -24,10 +24,16 @@ This library is still a work in progress. There may be some breaking changes in 
 - Download the [Controller](https://play.google.com/store/apps/details?id=com.invokcontroller.app) app from Google Play Store.
 - Install the following library:
     - [WiFi](https://github.com/arduino-libraries/WiFi)
+    - [ESPmDNS] (https://github.com/espressif/arduino-esp32/tree/master/libraries/ESPmDNS)
     - [ESP8266WiFi](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi)
+    - [ESP8266mDNS] (https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266mDNS)
     - [WebSockets](https://github.com/Links2004/arduinoWebSockets)
-- Download/clone this repository, and put it into libraries folder of Arduino directory.
+    - [WiFiManager] (https://github.com/tzapu/WiFiManager)
+- Download/clone this repository, and put it into libraries folder of Arduino directory. Ensure you have downloaded the latest version.
 - Compile and upload example sketch.
+- With WiFiManager, you can now setup WiFi without hardcoding SSID and password. After uploading the firmware, connect to ESP Wifi, SSID should be something like ESP_XXXX.
+- You will then be directed to configuration portal, if you are not redirected automatically, access the portal with this address (1.1.1.1). Internal LED will turn on when in wifi configuration mode.
+- Choose SSID you want to connect to, and input the password.
 - When connected to network, program will print __IP Address__ on Serial Monitor, take note of this address.
 - In Controller app home page, tap Wi-Fi icon on top right corner, this will route you to connection setup page.
 - Input the IP Address printed on serial monitor to address field.
