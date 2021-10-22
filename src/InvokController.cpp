@@ -79,6 +79,7 @@ void Controller::begin(){
   }
 }
 
+/// Loop routine of controller, Websocket loop executed in this function.
 void Controller::loop(){
   if(this->connectionType == "websocket"){
     this->websocket.loop();
@@ -160,6 +161,7 @@ void Controller::print(std::string toPrint){
   }
 }
 
+// Return command from controller app serial monitor tool.
 std::string Controller::getIncomingCommand(){
   std::string buffer = incomingCommand;
   // setIncomingCommand("");
@@ -172,6 +174,7 @@ std::string Controller::getHostname(){
 
 // ---------------------------------------- Callback ---------------------------------------------
 
+/// WebSocket callback routine, any websocket related event will be processed in this function.
 void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
   // Figure out the type of WebSocket event
   switch(type) {
@@ -296,6 +299,7 @@ std::vector<std::string> Controller::parsecpp(std::string data, std::string deli
   return myVector;
 }
 
+/// Begin multicast dns service by registering the hostname, and service type to the network.
 void Controller::mdnsBegin(){
   std::string mdnsHostname = std::string(getHostname().c_str());
   if (!MDNS.begin(mdnsHostname.c_str())) {  // Start the mDNS responder for esp8266.local
