@@ -6,31 +6,36 @@
 
 #include <InvokController.h>
 
+#define WEBSOCKET_POLL 5000
+
 // LED Blinker Timer
 double startTimeLED;
 double elapsedTimeLED;
 bool ledState = false;
+double watchWsTime;
+
 
 // ------------------------------ Constructor ------------------------------
-Controller::Controller(){
-  this->connectionType = "websocket"; // Default to websocket
-  Serial.begin(115200);
-}
 
-Controller::Controller(std::string connectionType){
+/**
+ *Construct controller object with following parameters:
+ *- Connection Type, default to websocket
+ *- Websocket Port, default to 80
+ *- Debug mode, default to false
+ */
+Controller::Controller(std::string connectionType, int websocketPort, bool debug){
   this->connectionType = connectionType;
-  Serial.begin(115200);
+  this->websocketPort = websocketPort;
+  this->debug = debug;
 }
 
+/// Begin Controller routine, setting up Wifi Manager
 void Controller::begin(){
   if(this->connectionType == "websocket"){
     // Begin Wifi connection routine
-    Serial.println("\nStarting Controller ...\n");
-    #ifdef DEBUG
-      wm.setDebugOutput(true);
-    #else
-      wm.setDebugOutput(false);
-    #endif
+    if(debug) Serial.println(F("\n[DEBUG] Starting Controller ...\n"));
+
+    wm.setDebugOutput(debug);
 
     // Set device as station mode
     WiFi.mode(WIFI_STA);
@@ -40,25 +45,22 @@ void Controller::begin(){
     digitalWrite(LED_BUILTIN, LED_ON);
 
     // Set IP Address
-    Serial.printf("Wi-Fi configuration mode, connect to ESP Wi-Fi, and begin setup");
+    if(debug) Serial.println(F("[DEBUG] Wi-Fi configuration mode, connect to ESP Wi-Fi, and begin setup"));
     wm.setAPStaticIPConfig(IPAddress(1,1,1,1), IPAddress(1,1,1,1), IPAddress(255,255,255,0));
-    bool res;
-    res = wm.autoConnect(); // auto generated AP name from chipid
+    wm.setTimeout(60);
+    wm.setTitle("ESP Controller");
+    bool res = wm.autoConnect(); // auto generated AP name from chipid
     
     if(!res) {
-      #ifdef DEBUG
-        Serial.println("Failed to connect");
-      #endif
-        // ESP.restart();
+      if(debug) Serial.println(F("[DEBUG] Failed to connect, Entering DEEP SLEEP, Reset to Wake Up"));
+      ESP.deepSleep(0);
     } 
     else {
       //if you get here you have connected to the WiFi    
-      #ifdef DEBUG
-        Serial.println("Connected to Wi-Fi");
-        Serial.println(wm.getDefaultAPName());
-        Serial.println(WiFi.SSID());  
-        Serial.println(WiFi.localIP());
-      #endif
+      if(debug){
+        Serial.printf("[DEBUG] Connected to Wi-Fi, AP [%s], SSID [%s], IP [%s]\n",
+          wm.getDefaultAPName().c_str(), WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
+      }
 
       getLocalIP();
 
@@ -82,7 +84,17 @@ void Controller::begin(){
 /// Loop routine of controller, Websocket loop executed in this function.
 void Controller::loop(){
   if(this->connectionType == "websocket"){
+
+    // Watch WebSocket Ping
+    if(millis() - watchWsTime > WEBSOCKET_POLL){
+      // No ping detected
+      if(debug) Serial.print(F("[DEBUG] No Ping detected\n"));
+      websocket.disconnect();
+      watchWsTime = millis();
+    }
+
     this->websocket.loop();
+
   }
 
   // Built in LED blinker
@@ -98,29 +110,12 @@ void Controller::loop(){
     }
   }
 
-
 }
 
 // ------------------------------ Setters ------------------------------
 
-void Controller::setSSID(std::string SSID){
-  this->SSID = SSID;
-}
-
-void Controller::setSSIDPassword(std::string password){
-  this->password = password;
-}
-
-void Controller::setWifiHostname(std::string hostname){
-  this->hostname = hostname;
-}
-
 void Controller::setWebsocketPort(int port){
   this->websocketPort = port;
-}
-
-void Controller::setMessage(std::string data){
-  this->message = data;
 }
 
 void Controller::setDataArrived(bool state){
@@ -135,6 +130,10 @@ void Controller::setHostname(std::string name){
   this->hostname = name;
 }
 
+void Controller::setDebugMode(bool state){
+  this->debug = state;
+}
+
 // ------------------------------ Getters ------------------------------
 
 IPAddress Controller::getLocalIP(){
@@ -144,10 +143,6 @@ IPAddress Controller::getLocalIP(){
 
 bool Controller::isConnected(){
   return this->_isConnected;
-}
-
-std::string Controller::getMessage(){
-  return this->message;
 }
 
 bool Controller::isDataArrived(){
@@ -164,7 +159,6 @@ void Controller::print(std::string toPrint){
 // Return command from controller app serial monitor tool.
 std::string Controller::getIncomingCommand(){
   std::string buffer = incomingCommand;
-  // setIncomingCommand("");
   return buffer;
 }
 
@@ -181,52 +175,50 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
 
     // Client has disconnected
     case WStype_DISCONNECTED:
-      Serial.printf("Client [%u] Disconnected!\n", num);
+      if(debug) Serial.printf("[DEBUG] Client [%u] Disconnected!\n", num);
       mdnsBegin();
       this->_isConnected = false;
       break;
 
     // New client has connected
     case WStype_CONNECTED:
-      if(!_isConnected){
-        this->connectedIndex = num;
-        IPAddress ip = this->websocket.remoteIP(num);
-        Serial.printf("Client [%u] Connection from ", num);
+      this->connectedIndex = num;
+      if(debug){
+        IPAddress ip = websocket.remoteIP(num);
+        Serial.printf("[DEBUG] [%u] Connection from ", num);
         Serial.println(ip.toString());
-        this->_isConnected = true;
-
-        //  Close mDNS
-        #ifdef ESP8266
-          MDNS.close();
-        #else 
-          MDNS.end();
-        #endif
-        
-        digitalWrite(LED_BUILTIN, LED_OFF);
-      } else {
-        Serial.printf("Connection refused, already connected to client\n");
       }
+
+      this->_isConnected = true;
+      watchWsTime = millis();
+
+      //  Close mDNS
+      #ifdef ESP8266
+        MDNS.removeService(getHostname().c_str(), "invc", "tcp");
+      #else 
+        mdns_free();
+      #endif
+      
+      digitalWrite(LED_BUILTIN, LED_OFF);
       break;
 
     // Message Received
     case WStype_TEXT:
+    {
       // Cast payload to string
-      this->rawData = std::string(reinterpret_cast<char*>(const_cast<uint8_t*>(payload)));
-      this->message = this->rawData;
+      this->message = std::string(reinterpret_cast<char*>(const_cast<uint8_t*>(payload)));
       this->dataArrived = true;
       
-      #ifdef DEBUG
-        Serial.printf("Message data is %s \n", this->message.c_str());
-      #endif
+      if(debug) Serial.printf("[DEBUG] Message from client: [%s] \n", this->message.c_str());
 
       this->parsedDataVector.reserve(10);
-      this->parsedDataVector = parsecpp(this->message, ",");
+      this->parsedDataVector = parsecpp(message, ",");
       this->command = parsedDataVector[0];
 
       if(command.compare("cms") == 0){
-        this->response = "sms," + parsedDataVector[1];
+        std::string response = "sms," + parsedDataVector[1];
         this->websocket.sendTXT(num, response.c_str());
-        this->response.clear();
+        response.clear();
         #ifdef DEBUG
           onMessageCallback(num, parsedDataVector[1]);
         #endif
@@ -245,39 +237,36 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
       } else if (command.compare("serial") == 0){
         // Update Incoming Command
         if(parsedDataVector[1].compare("initrequest") == 0){
-          String initResponse = "Connected to Server " + this->localIP.toString();
+          std::string ip = this->localIP.toString().c_str();
+          std::string initResponse = "Connected to Server " + ip;
           this->print(initResponse.c_str());
         } else {
-          setIncomingCommand(rawData.substr(parsedDataVector[0].length()+1));
+          setIncomingCommand(message.substr(parsedDataVector[0].length()+1));
           if(getIncomingCommand() == "reset"){
             wm.resetSettings();
             ESP.restart();
           }
         }
       }
-      
+    }
       break;
 
     // For everything else: do nothing
     case WStype_PING:
-    case WStype_BIN:
-    case WStype_ERROR:
-    case WStype_FRAGMENT_TEXT_START:
-    case WStype_FRAGMENT_BIN_START:
-    case WStype_FRAGMENT:
-    case WStype_FRAGMENT_FIN:
+      if(debug) Serial.print(F("[DEBUG] Ping from client\n"));
+      watchWsTime = millis();
+      break;
     default:
       break;
   }
 }
 
 void Controller::onMessageCallback(uint8_t num, std::string message){
-  Serial.printf("Channel [%d], Message is %s, echoed to client.\n", num, message.c_str());
+  if(debug) Serial.printf("[DEBUG] Channel [%d], Message is %s, echoed to client.\n", num, message.c_str());
 }
 
 void Controller::printIP(){
-  Serial.print("\nConnected to Wi-Fi, IP Address: ");
-  Serial.println(this->localIP);
+  Serial.printf("[DEBUG] Connected to Wi-Fi, IP Address: %s\n", getLocalIP().toString().c_str());
 }
 
 void Controller::setAuthorisation(std::string user, std::string pass){
@@ -301,15 +290,10 @@ std::vector<std::string> Controller::parsecpp(std::string data, std::string deli
 
 /// Begin multicast dns service by registering the hostname, and service type to the network.
 void Controller::mdnsBegin(){
-  std::string mdnsHostname = std::string(getHostname().c_str());
-  if (!MDNS.begin(mdnsHostname.c_str())) {  // Start the mDNS responder for esp8266.local
-  #ifdef DEBUG
-    Serial.println("Error setting up MDNS responder!");
-  #endif
+  if (!MDNS.begin(getHostname().c_str())) {  // Start the mDNS responder for esp8266.local
+    if(debug) Serial.print(F("[DEBUG] Error setting up MDNS responder!\n"));
   }
-  #ifdef DEBUG
-    Serial.println("mDNS responder started");
-  #endif
+    if(debug) Serial.print(F("[DEBUG] mDNS responder started\n"));
   MDNS.addService("invc", "tcp", 80);
   startTime = millis();
 }

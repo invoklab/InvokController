@@ -13,7 +13,7 @@ double capturedTime = 0;
 int variable = 0;
 
 // Controller Object Instantiation
-Controller myController("websocket");
+Controller myController("websocket", 80, false);
 
 void setup() {
   Serial.begin(115200);
@@ -21,7 +21,6 @@ void setup() {
   // Controller Setup
   myController.setHostname("Serial Monitor"); // mDNS
   myController.begin();
-  myController.printIP();
 }
 
 void loop() {

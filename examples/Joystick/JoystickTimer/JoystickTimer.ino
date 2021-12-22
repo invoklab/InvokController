@@ -8,7 +8,7 @@
 #include <InvokController.h>
 
 // Controller Object Instantiation
-Controller myController("websocket");
+Controller myController("websocket", 80, false);
 
 // Timer
 double elapsedTime = 0;
@@ -20,7 +20,6 @@ void setup() {
   // Controller Setup
   myController.setHostname("Joystick"); // mDNS
   myController.begin();
-  myController.printIP();
 }
 
 void loop() {

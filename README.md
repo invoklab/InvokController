@@ -13,6 +13,15 @@ Invok Controller library is a wrapper library based on:
 
 This library is used for connecting development boards to the [Controller](https://play.google.com/store/apps/details?id=com.invokcontroller.app) app. Controller App is now available on Google Play.
 
+## What's new ? 16 December 2021
+
+We have made the following changes:
+
+- Option to turn on/off Debug message. Debug message begins with [DEBUG] identifier.
+- Remove unused function from previous release.
+- Add ability to stop/remove mDNS service when device is connected.
+- Add connection status watcher by polling PING message from client.
+
 ## Disclaimer
 
 This library is still a work in progress. There may be some breaking changes in the future, which might require you to replace, re-organize, and rearrange functions or variables included in this library. Use this library at your own risk.
@@ -57,24 +66,25 @@ Create a new arduino sketch, and include InvokController.h
 
 `#include <InvokController.h>`
 
-Instantiate Controller object as global variable before setup(), and specify controller type as argument.
+Instantiate Controller object as global variable before setup(), and specify controller type, port, and debug mode as argument.
 
-`Controller myController = Controller("websocket");`
+`Controller myController("websocket", 80, false);`
 
 In setup(), initiate serial data transmission,
 
 `Serial.begin(115200);`
 
-and continue to call setters function to set wifi credentials.
+set hostname of your device for mDNS identification,
+
+`myController.setHostname("myDevice")`
+
+and continue to call begin method of controller.
 
 ```c++
-myController.setSSID("YOUR_SSID");
-myController.setSSIDPassword("YOUR_PASSWORD");
 myController.begin();
-myController.printIP();
 ```
 
-Connected IP Address will be printed after printIP() function executes, this is the server address you need to connect from client (Controller app).
+As soon as you call begin() method, Controller will start a Wi-Fi configuration portal. You can then enter/select your Wi-Fi. If connection is succesfull, the ESP board will start to broadcast a service through mDNS protocol. The controller app will find your ESP device automatically, and you can connect to it without having to check the serial monitor.
 
 Inside loop(), do not forget to call,
 

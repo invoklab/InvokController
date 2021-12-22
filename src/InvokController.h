@@ -15,7 +15,6 @@
 #ifdef ESP32
   #define LED_ON 0x1
   #define LED_OFF 0x0
-  #include <WiFi.h>
   #include <ESPmDNS.h>
   #define LED_BUILTIN 2
 #endif
@@ -23,7 +22,6 @@
 #ifdef ESP8266
   #define LED_ON 0x0
   #define LED_OFF 0x1
-  #include <ESP8266WiFi.h>
   #include <ESP8266mDNS.h> 
 #endif
 
@@ -40,34 +38,32 @@
 
 class Controller{
   private:
-    std::string SSID = "";
-    std::string password = "";
-    int websocketPort = 80;
-    std::string connectionType = "";
-    std::string response = "";
-    std::string rawData = "";
-    std::string message="";
+    int websocketPort;
+    std::string connectionType;
     IPAddress localIP;
     bool _isConnected = false;
     std::vector<std::string> parsedDataVector{};
-    std::string command = "";
+    std::string command;
     bool dataArrived = false;
-    std::string printString = "";
-    uint8_t connectedIndex = 0;
-    std::string incomingCommand = "";
-    std::string hostname = "Invok Controller";
+    std::string printString;
+    uint8_t connectedIndex;
+    std::string incomingCommand;
+    std::string hostname;
+    std::string message;
+    bool debug;
 
   public:
     // ---------- Constructor ---------- 
-    Controller();
-    Controller(std::string connectionType);
+    Controller(
+      std::string connectionType = "websocket",
+      int websocketPort = 80,
+      bool debug = false
+    );
 
     void begin();
     void loop();
 
     // ---------- Setters ----------
-    void setSSID(std::string SSID);
-    void setSSIDPassword(std::string password);
     void setWifiHostname(std::string hostname);
     void setWebsocketPort(int port);
     void setAuthorisation(std::string user, std::string pass);
@@ -76,6 +72,7 @@ class Controller{
     void print(std::string toPrint); // For serial monitor printing
     void setIncomingCommand(std::string command);
     void setHostname(std::string name);
+    void setDebugMode(bool state = false);
 
     // ---------- Getters ----------
     bool isConnected();
