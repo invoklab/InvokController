@@ -13,7 +13,15 @@ Invok Controller library is a wrapper library based on:
 
 This library is used for connecting development boards to the [Controller](https://play.google.com/store/apps/details?id=com.invokcontroller.app) app. Controller App is now available on Google Play.
 
-## What's new ? 16 December 2021
+## What's new ?
+
+## 8 May 2023
+
+We have added the following:
+
+- Example sketch for motion control.
+
+## 16 December 2021
 
 We have made the following changes:
 
@@ -172,3 +180,27 @@ Controller serial monitor act just like Arduino serial monitor. It can send, rec
 `ControllerName.print(std::string stringToPrint)` -> will print 'stringToPrint' in Controller app.
 `ControllerName.getIncomingCommand()` -> Return a __std::string__ received from Controller app.
 `ControllerName.setIncomingCommand(std::string command)` -> Setter function to set the command when it is received from the app. This setter can also be used to flush the buffer by passing empty string as parameter ("").
+
+### Motion Control
+
+In Controller app, Motion Control will generate 5 data, [x, y, r, theta, intensity]. This control method is very similar to Joystick. In motion control, the pointer move according to the absolute orientation of the phone.
+
+- __x,y__ represent coordinate of the pointer in cartesian form.
+- __r,theta__ represent coordiate of the pointer in polar form, where theta range is [0 - 360°].
+- __intensity__ is the relative distance of pad from center circle to outer circle in percentage out of 100.
+
+#### Getters
+
+`ControllerName.motion.getX()` -> Return x coordinate as __double__.
+
+`ControllerName.motion.getY()` -> Return y coordinate as __double__.
+
+`ControllerName.motion.getR()` -> Return range value as __double__.
+
+`ControllerName.motion.getTheta()` -> Return angle as __double__.
+
+`ControllerName.motion.getIntensity()` -> Return intensity  as __double__.
+
+All of these datas are sent to the server via WiFi on selected protocol, parsed, and ready to be used.
+
+There is a small deadzone in the middle of the Pad to prevent unwanted control motion.
