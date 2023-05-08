@@ -2,6 +2,7 @@
   Class definition for InvokController.h library.
   Created by Thoby L. Noorhalim
   26 August 2021
+  Last Update 8 May 2023
 */
 
 #include <InvokController.h>
@@ -247,6 +248,9 @@ void Controller::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload,
             ESP.restart();
           }
         }
+      } else if (command.compare("motion") == 0){
+        // Update Motion Data
+        motion.updateData(parsedDataVector);
       }
     }
       break;

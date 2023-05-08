@@ -7,6 +7,7 @@
   to be used for connecting and processing data from Controller app.
   Created by Thoby L. Noorhalim.
   26 August 2021.
+  Last Update 8 May 2023
 */
 
 #ifndef INVOKCONTROLLER_H
@@ -31,6 +32,7 @@
 #include <ColorPicker.h>
 #include <ButtonArray.h>
 #include <Slider.h>
+#include <Motion.h>
 #include <string>
 #include <vector>
 
@@ -98,6 +100,7 @@ class Controller{
     ColorPicker colorPicker;
     ButtonArray buttonArray;
     Slider slider;
+    Motion motion;
     WiFiManager wm;
 
     // Timer
